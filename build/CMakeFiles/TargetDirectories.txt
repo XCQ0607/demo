@@ -1,0 +1,3 @@
+/cloudide/workspace/DEMO/build/CMakeFiles/rebuild_cache.dir
+/cloudide/workspace/DEMO/build/CMakeFiles/edit_cache.dir
+/cloudide/workspace/DEMO/build/CMakeFiles/main.dir

@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/cloudide/workspace/DEMO/go.c
+
+/cloudide/workspace/DEMO/main.c
+stdio.h
+-
+go.c
+/cloudide/workspace/DEMO/go.c
+
