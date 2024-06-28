@@ -3,4 +3,5 @@
 
 CMakeFiles/main.dir/main.c.o: ../go.c
 CMakeFiles/main.dir/main.c.o: ../main.c
+CMakeFiles/main.dir/main.c.o: ../new.c
 

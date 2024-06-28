@@ -1,0 +1,527 @@
+模板
+----------------------------------------------------
+
+题目:
+
+解答：
+go.c文件
+
+
+main.c文件:
+#include "go.c"
+
+1.请帮我写main.c中的main函数，调用go.c中的函数并传入参数
+
+2.通过示例1详细和我讲一下这个代码发了执行过程。最好使用图形化的方式帮助理解。
+
+3.如果解决代码使用了某种算法，请向我说明并介绍它
+
+
+细解释一下这个问题，最好使用图形化的方式帮助理解。
+----------------------------------------------------
+
+2389
+题目:
+给你一个长度为 n 的整数数组 nums ，和一个长度为 m 的整数数组 queries 。
+返回一个长度为 m 的数组 answer ，其中 answer[i] 是 nums 中 元素之和小于等于 queries[i] 的 子序列 的 最大 长度  。
+子序列 是由一个数组删除某些元素（也可以不删除）但不改变剩余元素顺序得到的一个数组。
+
+示例 1：
+输入：nums = [4,5,2,1], queries = [3,10,21]
+输出：[2,3,4]
+解释：queries 对应的 answer 如下：
+- 子序列 [2,1] 的和小于或等于 3 。可以证明满足题目要求的子序列的最大长度是 2 ，所以 answer[0] = 2 。
+- 子序列 [4,5,1] 的和小于或等于 10 。可以证明满足题目要求的子序列的最大长度是 3 ，所以 answer[1] = 3 。
+- 子序列 [4,5,2,1] 的和小于或等于 21 。可以证明满足题目要求的子序列的最大长度是 4 ，所以 answer[2] = 4 。
+示例 2：
+输入：nums = [2,3,4,5], queries = [1]
+输出：[0]
+解释：空子序列是唯一一个满足元素和小于或等于 1 的子序列，所以 answer[0] = 0 。
+
+解答：
+int cmp(const void* a, const void* b) {
+    return (*(int*)a - *(int*)b);       //升序排列
+}
+int* answerQueries(int* nums, int numsSize, int* queries, int queriesSize, int* returnSize) {
+    //nums = [4,5,2,1], queries = [3,10,21]
+    qsort(nums, numsSize, sizeof(int), cmp);
+    //此时nums = [1,2,4,5]，queries = [3,10,21]
+    for(int i = 1; i < numsSize; i++)
+        nums[i] += nums[i - 1];
+    for(int i = 0; i < queriesSize; i++){
+        int left = 0, right = numsSize - 1;
+        while(left <= right){
+            int mid = left + (right - left) / 2;
+            if(nums[mid] <= queries[i])
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+        queries[i] = left;
+    }
+    *returnSize = queriesSize;
+
+    return queries;
+}
+
+流程:
+详细和我讲一下输入为nums = [4,5,2,1], queries = [3,10,21]时代码的执行逻辑
+
+排序 nums 数组：
+qsort(nums, numsSize, sizeof(int), cmp);
+使用 qsort 函数对 nums 数组进行升序排序。排序后的 nums 数组为：
+nums = [1, 2, 4, 5]
+
+计算前缀和：
+for(int i = 1; i < numsSize; i++)
+nums[i] += nums[i - 1];
+计算前缀和，更新 nums 数组。每个元素表示从第一个元素到当前元素的累加和。计算过程如下：
+nums[1] += nums[0] -> nums[1] = 2 + 1 = 3
+nums[2] += nums[1] -> nums[2] = 4 + 3 = 7
+nums[3] += nums[2] -> nums[3] = 5 + 7 = 12
+更新后的 nums 数组为：
+nums = [1, 3, 7, 12]    //第一项不变，前一项+第二项,前一项+第三项，前一项+第四项
+
+
+二分查找
+
+详细解释
+初始化 left 和 right
+int left = 0, right = numsSize - 1;
+left 初始化为 0，表示数组的起始位置。
+right 初始化为 numsSize - 1，表示数组的末尾位置。
+判断条件 left <= right
+while(left <= right){
+这个条件表示只要 left 小于或等于 right，循环就继续进行。
+当 left 超过 right 时，表示查找范围已经无效，循环终止。
+计算中间位置 mid
+int mid = left + (right - left) / 2;
+计算当前查找范围的中间位置 mid。
+这种计算方式可以避免直接使用 (left + right) / 2 可能导致的整数溢出问题。
+判断 nums[mid] 和 queries[i] 的关系
+if(nums[mid] <= queries[i])
+    left = mid + 1;
+else
+    right = mid - 1;
+如果 nums[mid] 小于或等于 queries[i]，说明 mid 及其左侧的元素都满足条件，因此将 left 移动到 mid + 1，继续在右侧查找。
+如果 nums[mid] 大于 queries[i]，说明 mid 及其右侧的元素都不满足条件，因此将 right 移动到 mid - 1，继续在左侧查找。
+具体例子
+输入
+nums = [1, 3, 7, 12]（已经排序并计算前缀和）
+queries = [3, 10, 21]
+处理 queries[0] = 3
+初始状态：
+left = 0
+right = 3（numsSize - 1）
+第一次迭代：
+mid = 1
+nums[1] = 3，满足 nums[mid] <= queries[i]，所以 left = mid + 1 = 2
+第二次迭代：
+mid = 2
+nums[2] = 7，不满足 nums[mid] <= queries[i]，所以 right = mid - 1 = 1
+终止条件：
+left = 2
+right = 1
+left > right，循环终止
+最终，queries[0] 被更新为 left 的值，即 2。
+
+right 初始化为 numsSize - 1 是为了覆盖整个数组的范围。
+判断条件 left <= right 是为了确保查找范围有效。
+if(nums[mid] <= queries[i]) 和 else 分支用于调整查找范围，确保找到满足条件的最大索引。
+
+
+2180
+题目:
+给你一个正整数 num ，请你统计并返回 小于或等于 num 且各位数字之和为 偶数 的正整数的数目。
+正整数的 各位数字之和 是其所有位上的对应数字相加的结果。
+
+示例 1：
+输入：num = 4
+输出：2
+解释：
+只有 2 和 4 满足小于等于 4 且各位数字之和为偶数。    
+示例 2：
+输入：num = 30
+输出：14
+解释：
+只有 14 个整数满足小于等于 30 且各位数字之和为偶数，分别是： 
+2、4、6、8、11、13、15、17、19、20、22、24、26 和 28 。
+解答：
+go.c文件
+int getDigitSum(int num) {
+    int sum = 0;
+    while (num > 0) {
+        sum += num % 10;
+        num /= 10;
+    }
+    return sum;
+}
+
+int countEven(int num) {
+    int even = 0;
+    for (int i = 1; i <= num; i++) {
+        if (getDigitSum(i) % 2 == 0) {
+            even++;
+        }
+    }
+    return even;
+} 
+
+--------------------------------------------------
+
+2215
+题目:
+给你两个下标从 0 开始的整数数组 nums1 和 nums2 ，请你返回一个长度为 2 的列表 answer ，其中：
+answer[0] 是 nums1 中所有 不 存在于 nums2 中的 不同 整数组成的列表。
+answer[1] 是 nums2 中所有 不 存在于 nums1 中的 不同 整数组成的列表。
+注意：列表中的整数可以按 任意 顺序返回。
+
+示例 1：
+输入：nums1 = [1,2,3], nums2 = [2,4,6]
+输出：[[1,3],[4,6]]
+解释：
+对于 nums1 ，nums1[1] = 2 出现在 nums2 中下标 0 处，然而 nums1[0] = 1 和 nums1[2] = 3 没有出现在 nums2 中。因此，answer[0] = [1,3]。
+对于 nums2 ，nums2[0] = 2 出现在 nums1 中下标 1 处，然而 nums2[1] = 4 和 nums2[2] = 6 没有出现在 nums2 中。因此，answer[1] = [4,6]。
+示例 2：
+输入：nums1 = [1,2,3,3], nums2 = [1,1,2,2]
+输出：[[3],[]]
+解释：
+对于 nums1 ，nums1[2] 和 nums1[3] 没有出现在 nums2 中。由于 nums1[2] == nums1[3] ，二者的值只需要在 answer[0] 中出现一次，故 answer[0] = [3]。
+nums2 中的每个整数都在 nums1 中出现，因此，answer[1] = [] 。 
+
+解答：
+go.c文件
+int** findDifference(int* nums1, int nums1Size, int* nums2, int nums2Size, int* returnSize, int** returnColumnSizes) {
+    int hash1[2001] = { 0 };
+    int hash2[2001] = { 0 };
+    int** ans = (int**)malloc(sizeof(int*)*2);
+    ans[0] = (int*)malloc(sizeof(int)*nums1Size);
+    ans[1] = (int*)malloc(sizeof(int)*nums2Size);
+
+    int diff1 = 0;
+    int diff2 = 0;
+
+    int i = 0;
+    for (i = 0; i < nums2Size; i++)
+    {
+        hash1[1000-nums2[i]] += 1;
+    }
+
+    for (i = 0; i < nums1Size; i++)
+    {
+        hash2[1000-nums1[i]] += 1;
+    }
+    //
+    for (i = 0; i < nums1Size; i++)
+    {
+        if (hash1[1000-nums1[i]] == 0)
+        {
+            ans[0][diff1++] = nums1[i];
+            hash1[1000-nums1[i]] += 1;
+        }
+    }
+
+    for (i = 0; i < nums2Size; i++)
+    {
+        if (hash2[1000-nums2[i]] == 0)
+        {
+            ans[1][diff2++] = nums2[i];
+            hash2[1000-nums2[i]] += 1;
+        }
+    }    
+
+    *returnColumnSizes = (int*)malloc(sizeof(int)*2);
+
+    (*returnColumnSizes)[0] = diff1;
+    (*returnColumnSizes)[1] = diff2;
+    
+    *returnSize = 2;
+    return ans;
+}
+参数nums1 = [1,2,3], nums2 = [2,4,6]
+
+------------------------------------------------------
+1971
+
+题目:
+有一个具有 n 个顶点的 双向 图，其中每个顶点标记从 0 到 n - 1（包含 0 和 n - 1）。图中的边用一个二维整数数组 edges 表示，其中 edges[i] = [ui, vi] 表示顶点 ui 和顶点 vi 之间的双向边。 每个顶点对由 最多一条 边连接，并且没有顶点存在与自身相连的边。
+请你确定是否存在从顶点 source 开始，到顶点 destination 结束的 有效路径 。
+给你数组 edges 和整数 n、source 和 destination，如果从 source 到 destination 存在 有效路径 ，则返回 true，否则返回 false 。
+
+示例 1：
+输入：n = 3, edges = [[0,1],[1,2],[2,0]], source = 0, destination = 2
+edges决定：
+  0
+ / \
+1 - 2
+输出：true
+解释：存在由顶点 0 到顶点 2 的路径:
+- 0 → 1 → 2 
+- 0 → 2
+
+示例 2：
+输入：n = 6, edges = [[0,1],[0,2],[3,5],[5,4],[4,3]], source = 0, destination = 5
+由edges决定：
+  0     3
+ / \   / \
+1   2 4 - 5
+输出：false
+解释：不存在由顶点 0 到顶点 5 的路径.
+
+
+解答：
+go.c文件
+int setFind(int *set,int u){
+    if(u==set[u])return u;
+    else return set[u]=setFind(set,set[u]);
+}
+bool isSameSet(int *set,int u, int v){
+    u=setFind(set,u);
+    v=setFind(set,v);
+    return u==v;
+}
+void setJoin(int *set, int u, int v){
+    u=setFind(set,u);
+    v=setFind(set,v);
+    if(u==v)return;
+    set[u]=v;
+}
+bool validPath(int n, int** edges, int edgesSize, int* edgesColSize, int source, int destination) {
+    int *set=malloc(sizeof(int)*n);
+    for(int i=0;i<n;i++)set[i]=i;
+    for(int i=0;i<edgesSize;i++) setJoin(set,edges[i][0],edges[i][1]);
+    return isSameSet(set,source,destination);
+}
+
+传入参数n = 3, edges = [[0,1],[1,2],[2,0]], source = 0, destination = 2
+
+
+使用并查集（Union-Find）算法解决这个问题
+初始化：每个节点开始时是一个独立的集合。
+连接操作：对于每一条边，将连接的两个节点合并到一个集合中。
+查找操作：最终检查 source 和 destination 是否在同一个集合中。
+
+具体步骤如下：
+创建一个数组 set，初始化时每个节点指向自身。
+遍历 edges 数组，对每一条边执行 union 操作，将两个节点合并到同一个集合中。
+最后，检查 source 和 destination 是否属于同一个集合。
+通过这些步骤，可以高效地判断是否存在从 source 到 destination 的路径。
+
+代码解释
+并查集的函数
+setFind：查找集合的根节点，并进行路径压缩优化。
+isSameSet：检查两个节点是否在同一个集合中。
+setJoin：将两个节点的集合合并。
+主函数
+validPath：初始化并查集，对所有边进行合并操作，最后检查源节点和目标节点是否在同一个集合中。
+
+什么是根节点？
+在并查集（Union-Find）中，根节点（Root Node）是集合中的代表元素。每个集合通过一个树结构表示，树的根节点是树中唯一一个没有父节点的节点。
+
+图形化解释
+初始化
+假设有 3 个顶点（0, 1, 2），初始时每个顶点都是一个独立的集合：
+ 0   1   2
+(自成一体)
+对应的 set 数组：
+set = [0, 1, 2]
+每个顶点是自己的根节点。
+
+处理每条边
+
+边 [0, 1]
+调用 setJoin(set, 0, 1)：
+查找根节点：
+setFind(set, 0) 返回 0
+setFind(set, 1) 返回 1
+合并集合：
+将 0 的根节点设为 1：       以后将0连别的节点都会重定向至1
+set[0] = 1
+更新后的 set 数组：
+set = [1, 1, 2]
+图形化表示：
+ 0 - 1   2
+
+边 [1, 2]
+调用 setJoin(set, 1, 2)：
+查找根节点：
+setFind(set, 1) 返回 1
+setFind(set, 2) 返回 2
+合并集合：
+将 1 的根节点设为 2：
+set[1] = 2
+更新后的 set 数组：
+set = [1, 2, 2]
+图形化表示：
+ 0 - 1 - 2
+
+边 [2, 0]
+调用 setJoin(set, 2, 0)：
+查找根节点：
+setFind(set, 2) 返回 2
+setFind(set, 0) 需要路径压缩：
+setFind(set, 0) 调用 setFind(set, 1)
+setFind(set, 1) 调用 setFind(set, 2) 返回 2
+路径压缩后，set[0] = 2
+合并集合：
+0 和 2 已在同一个集合中（根节点相同），无需合并。
+更新后的 set 数组保持不变：
+set = [2, 2, 2]
+图形化表示：
+ 0 - 1 - 2
+(已连通)
+
+检查路径
+调用 isSameSet(set, source, destination)：
+查找根节点：
+setFind(set, 0) 返回 2
+setFind(set, 2) 返回 2
+根相同，返回 true。
+总结
+通过并查集的操作，图中的所有顶点被连接成一个集合，最后检查源和目标是否在同一个集合中：
+ 0 - 1 - 2
+这意味着存在从 0 到 2 的有效路径。
+
+------------------------------------------------------
+2103
+题目:
+总计有 n 个环，环的颜色可以是红、绿、蓝中的一种。这些环分别穿在 10 根编号为 0 到 9 的杆上。
+给你一个长度为 2n 的字符串 rings ，表示这 n 个环在杆上的分布。rings 中每两个字符形成一个 颜色位置对 ，用于描述每个环：
+第 i 对中的 第一个 字符表示第 i 个环的 颜色（'R'、'G'、'B'）。
+第 i 对中的 第二个 字符表示第 i 个环的 位置，也就是位于哪根杆上（'0' 到 '9'）。
+例如，"R3G2B1" 表示：共有 n == 3 个环，红色的环在编号为 3 的杆上，绿色的环在编号为 2 的杆上，蓝色的环在编号为 1 的杆上。
+找出所有集齐 全部三种颜色 环的杆，并返回这种杆的数量。
+
+示例 1：
+输入：rings = "B0B6G0R6R0R6G9"
+输出：1
+解释：
+- 编号 0 的杆上有 3 个环，集齐全部颜色：红、绿、蓝。
+- 编号 6 的杆上有 3 个环，但只有红、蓝两种颜色。
+- 编号 9 的杆上只有 1 个绿色环。
+因此，集齐全部三种颜色环的杆的数目为 1 。
+示例 2：
+输入：rings = "B0R0G0R9R0B0G0"
+输出：1
+解释：
+- 编号 0 的杆上有 6 个环，集齐全部颜色：红、绿、蓝。
+- 编号 9 的杆上只有 1 个红色环。
+因此，集齐全部三种颜色环的杆的数目为 1 。
+示例 3：
+输入：rings = "G4"
+输出：0
+解释：
+只给了一个环，因此，不存在集齐全部三种颜色环的杆。
+解答：
+go.c文件
+int countPoints(char* rings) {
+    int d['Z'];
+    memset(d, 0, sizeof(d));
+    d['R'] = 1;
+    d['G'] = 2;
+    d['B'] = 4;
+
+    int mask[10];
+    memset(mask, 0, sizeof(mask));
+
+    for (int i = 0, n = strlen(rings); i < n; i += 2) {
+        int c = rings[i];
+        int j = rings[i + 1] - '0';
+        mask[j] |= d[c];
+    }
+
+    int ans = 0;
+    for (int i = 0; i < 10; i++) {
+        if (mask[i] == 7) {
+            ans++;
+        }
+    }
+
+    return ans;
+}
+main.c文件:
+#include "go.c"
+
+1.请帮我写main.c中的main函数，调用go.c中的countPoints函数并传入参数rings = "B0B6G0R6R0R6G9"
+
+2.通过示例1详细和我讲一下这个代码发了执行过程。最好使用图形化的方式帮助理解。
+
+3.如果解决代码使用了某种算法，请向我说明并介绍它
+
+示例1详细解释代码执行过程：
+输入字符串为 rings = "B0B6G0R6R0R6G9"。我们将以图形化的方式展示代码的执行过程。
+
+初始化映射数组 d 用于颜色到二进制数值的映射：
+
+d['R'] = 1 (0001 in binary)
+d['G'] = 2 (0010 in binary)
+d['B'] = 4 (0100 in binary)
+初始化杆状态数组 mask 为0:
+
+css
+复制代码
+mask[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+遍历输入字符串 rings，每两个字符作为一对（颜色, 杆位置），更新杆的状态。
+
+B0 -> 蓝色环在杆 0:
+
+css
+复制代码
+mask[0] |= d['B'] -> mask[0] |= 4 -> mask[0] = 0100
+mask = {4, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+B6 -> 蓝色环在杆 6:
+
+css
+复制代码
+mask[6] |= d['B'] -> mask[6] |= 4 -> mask[6] = 0100
+mask = {4, 0, 0, 0, 0, 0, 4, 0, 0, 0}
+G0 -> 绿色环在杆 0:
+
+css
+复制代码
+mask[0] |= d['G'] -> mask[0] |= 2 -> mask[0] = 0100 | 0010 = 0110
+mask = {6, 0, 0, 0, 0, 0, 4, 0, 0, 0}
+R6 -> 红色环在杆 6:
+
+css
+复制代码
+mask[6] |= d['R'] -> mask[6] |= 1 -> mask[6] = 0100 | 0001 = 0101
+mask = {6, 0, 0, 0, 0, 0, 5, 0, 0, 0}
+R0 -> 红色环在杆 0:
+
+css
+复制代码
+mask[0] |= d['R'] -> mask[0] |= 1 -> mask[0] = 0110 | 0001 = 0111
+mask = {7, 0, 0, 0, 0, 0, 5, 0, 0, 0}
+R6 -> 红色环在杆 6（已存在）:
+
+css
+复制代码
+mask[6] |= d['R'] -> mask[6] |= 1 -> mask[6] = 0101 | 0001 = 0101
+mask = {7, 0, 0, 0, 0, 0, 5, 0, 0, 0}
+G9 -> 绿色环在杆 9:
+
+css
+复制代码
+mask[9] |= d['G'] -> mask[9] |= 2 -> mask[9] = 0010
+mask = {7, 0, 0, 0, 0, 0, 5, 0, 0, 2}
+检查每个杆的状态，计数拥有所有三种颜色（R、G、B）的杆：
+
+css
+复制代码
+mask[0] = 0111 -> all three colors
+mask[6] = 0101 -> not all three colors
+mask[9] = 0010 -> not all three colors
+结果是1个杆（杆0）拥有所有三种颜色。
+
+这个代码使用了位掩码（bitmask）算法。
+位掩码算法介绍：
+
+位掩码是一种使用二进制位来表示状态的技术。在本题中，我们使用位掩码表示每个杆上的颜色状态：
+
+红色 R 用 0001 表示。
+绿色 G 用 0010 表示。
+蓝色 B 用 0100 表示。
+通过使用按位或运算（|=），我们可以将颜色的状态组合在一起。例如，如果一个杆上有红色和绿色的环，那么其位掩码值为 0001 | 0010 = 0011。如果一个杆上的掩码值为 0111（即 7），则表示该杆上集齐了所有三种颜色的环。
+
+这种方法的优点是状态表示紧凑且操作效率高，可以通过简单的按位运算快速更新和检查状态。

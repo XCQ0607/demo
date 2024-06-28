@@ -1,7 +1,2 @@
 {
-    "quickchat.showQuickchat": {
-        "enableInlineDocumentation": true,
-        "enableInlineExplain": true,
-        "enableInlineTest": true
-    }
 }

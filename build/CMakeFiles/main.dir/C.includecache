@@ -7,10 +7,24 @@
 #IncludeRegexTransform: 
 
 /cloudide/workspace/DEMO/go.c
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
 
 /cloudide/workspace/DEMO/main.c
 stdio.h
 -
+stdlib.h
+-
 go.c
 /cloudide/workspace/DEMO/go.c
+new.c
+/cloudide/workspace/DEMO/new.c
+
+/cloudide/workspace/DEMO/new.c
+stdio.h
+-
 
