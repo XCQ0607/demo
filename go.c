@@ -237,7 +237,7 @@ int** shiftGrid(int** grid, int row, int* gridCol, int k, int* returnSize, int**
 //为了更方便地处理矩阵中的元素，我们将二维矩阵的索引 (i, j) 转换为一维索引 i * col + j。这个索引表示当前元素在一维数组中的位置。
 // i * col + j 将二维索引转换为一维索引。
 // 减去 k 实现元素左移 k 次。
-// 加上 row * col 防止负索引。
+// 加上 row * col 防止负索引。(i,j均为0时)
 // 取模 % (row * col) 确保索引在有效范围内。
             ans[i][j] = grid[id / col][id % col];
             //这里的id/col是行，id%col是列,脑子里想矩阵就懂了
@@ -247,17 +247,288 @@ int** shiftGrid(int** grid, int row, int* gridCol, int k, int* returnSize, int**
 }
 
 /*
-*   Y(B)  x(A)
+*   Y(B)  X(A)
 *   *     *
 *   *     *
 
 k=1
 
 *   *(B)  Y(A)
-x   *     *
+X   *     *
 *   *     *
 
 你想要A位置的数据正确，那么就得让位置的Y移到A位置，那么这里得到需填充的值grid[id / col][id % col]的id值就得-k
 */
 
 //----------------------------------------------------
+//1122
+int* relativeSortArray(int* arr1, int arr1Size, int* arr2, int arr2Size, int* returnSize){
+    int index = 0;
+    int hash[1001] = {0};
+    for (int i = 0; i < arr1Size; ++i) {
+        hash[arr1[i]]++;        //arr1中元素值作为index，出现个数作为hash[index]的值
+    }
+    //arr1 = [2,3,1,3,2,4,6,7,9,2,19], arr2 = [2,1,4,3,9,6]
+    for (int i = 0; i < arr2Size; ++i) {
+        while (hash[arr2[i]] > 0) {     //再从arr2中找到arr2[i](设为X)，X作为hash的index(从0开始)赋值给arr1[index]的值，令再使hash[X]--
+            arr1[index++] = arr2[i];
+            hash[arr2[i]]--;
+        }
+    }
+
+    for (int i = 0; i < 1001; ++i) {
+        while (hash[i] > 0) {
+            //如果arr2中没有的arr1中对应的元素，那么其值设为X。hash[X]值不为0。从0开始for循环，内部while判定若hash[X]>0就继续填充，顺便hash[X]--
+            arr1[index++] = i;
+            hash[i]--;
+        }
+    }
+
+    *returnSize = arr1Size;
+    //返回排好序的arr1
+    return arr1;
+}
+
+//----------------------------------------------------
+//1313
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* decompressRLElist(int* nums, int numsSize, int* returnSize) {
+    //nums[] = {1, 2, 3, 4};1个2,3个4
+    int i, j, k, count;
+    int *res;
+    k = 0;
+    count = 0;
+    for (i = 0; i < numsSize; i += 2)
+    {
+        count += nums[i];
+    }
+    *returnSize = count;
+    res = (int *)malloc(sizeof(int) * count);//为了符合题意(The returned array must be malloced)，需要提前开辟空间
+    for (i = 1; i < numsSize; i += 2)       //i=1.3   num[i]就是要打印的值，num[i-1]就是要打印的次数
+    {
+        for (j = 0; j < nums[i - 1]; j++)       //打印num[i-1]次
+        {
+            res[k] = nums[i];
+            k++;
+        }
+    }
+    return res;
+}
+//----------------------------------------------------
+//1351
+int countNegatives(int **grid, int gridSize, int *gridColSize) {
+    int ans = 0;
+    int Row = gridSize;
+    int Col = gridColSize[0];
+    for (int i = 0; i < Row; i++) {
+        int j = Col - 1;  // 从每行的最后一个元素开始
+        while (j >= 0) {
+            if(grid[i][j] < 0){ans++;}  //无需严格递减
+            j--;
+        }
+    }
+    return ans;
+}
+/*
+//严格递减时
+int countNegatives(int **grid, int gridSize, int *gridColSize) {
+    int ans = 0;
+    int Row = gridSize;
+    int Col = gridColSize[0];
+    for (int i = 0; i < Row; i++) {
+        int j = Col - 1;  // 从每行的最后一个元素开始
+        while (j >= 0) {
+            if(grid[i][j] < 0){ans++;}
+            j--;
+        }
+    }
+    return ans;
+}
+*/
+
+    //   |  --------------->ROW    行(子数组内元素个数)
+    //   |  {4,  3,   2, -1}
+    //   |  {3,  2,   1, -1}
+    //   |  {1,  1,  -1, -2}
+    //   V  {-1, -1, -2, -3}
+    //  COL
+    //  列(子数组个数)
+//----------------------------------------------------
+//1403
+int cmp1(const void *a, const void *b)
+{
+    return *(int*)b - *(int*)a;
+}
+
+int* minSubsequence(int* nums, int numsSize, int* returnSize) 
+{
+    qsort(nums, numsSize, sizeof(int), cmp1);
+    int *temp = (int*)malloc(sizeof(int)*numsSize);
+    temp[0] = nums[0];
+    int sum = nums[0];
+    for(int i = 1; i < numsSize; i++)
+    {
+        sum += nums[i];
+        temp[i] = temp[i - 1] + nums[i];
+        // temp保存前缀和
+    }
+
+    int index = 0;
+    for(int i = 0; i < numsSize; i++)
+    {
+        int small = sum - temp[i];
+        if(small < temp[i])
+        {
+            index = i;
+            break;
+        }
+    }
+    free(temp);
+    *returnSize = index + 1;//index+1是因为要返回的大小是 索引+1
+    int* res = (int*)malloc(sizeof(int) * (index + 1));
+    for(int i = 0; i <= index; i++)
+    {
+        res[i] = nums[i];
+    }
+    return res;
+}
+//----------------------------------------------------
+//中等
+//面试题 16.04. 井字游戏
+char* tictactoe(char** board, int boardSize){
+    //O   X
+    //  X O
+    //X   O
+    //当有N个相同（且非空）的字符填充任何行、列或对角线时，游戏结束，对应该字符的玩家获胜。
+    //统计每一行，每一列，对角线上面，‘O’和‘X’字符的个数
+    //横
+    int oCnt = 0;
+    int xCnt = 0;
+    for(int i = 0; i < boardSize;i++){
+        oCnt = 0;
+        xCnt = 0;
+        for(int j = 0; j < boardSize;j++) {
+            if(board[i][j] == 'O')
+                oCnt++;
+            else if(board[i][j] == 'X')
+                xCnt++;
+        }
+
+        if(oCnt == boardSize || xCnt == boardSize)
+            return oCnt == boardSize?"O":"X";
+    }
+    //竖
+    for(int i = 0; i < boardSize;i++){
+        oCnt = 0;
+        xCnt = 0;
+        for(int j = 0; j < boardSize;j++) {
+            if(board[j][i] == 'O')
+                oCnt++;
+            else if(board[j][i] == 'X')
+                xCnt++;
+        }
+
+        if(oCnt == boardSize || xCnt == boardSize)
+            return oCnt == boardSize?"O":"X";
+    }
+
+
+    //对角线
+    //正对角线
+    oCnt = 0;
+    xCnt = 0;
+    for(int i = 0; i < boardSize;i++){
+        if(board[i][i] == 'O')
+            oCnt++;
+        else if(board[i][i] == 'X')
+            xCnt++;
+    }
+
+    if(oCnt == boardSize || xCnt == boardSize)
+        return oCnt == boardSize?"O":"X";
+
+    //反对角线
+    oCnt = 0;
+    xCnt = 0;
+    for(int i = 0; i < boardSize;i++){
+        if(board[i][boardSize - i - 1] == 'O')
+            oCnt++;
+        else if(board[i][boardSize - i - 1] == 'X')
+            xCnt++;
+    }
+
+    if(oCnt == boardSize || xCnt == boardSize)
+        return oCnt == boardSize?"O":"X";
+    
+    oCnt = 0;
+    xCnt = 0;
+    //判断是否有空位
+    //合计O与X的个数
+    for(int i = 0; i < boardSize;i++){
+        for(int j = 0; j < boardSize;j++) {
+            if(board[i][j] == 'O')
+                oCnt++;
+            else if(board[i][j] == 'X')
+                xCnt++;
+        }
+    }
+
+    printf("%d %d %d\n",oCnt,xCnt,boardSize * boardSize);
+    //走到这里，说明还没有玩家获胜
+    return oCnt + xCnt == boardSize * boardSize?"Draw":"Pending";
+
+};
+//----------------------------------------------------
+//面试题 17.09. 第 k 个数
+int getKthMagicNumber(int k) {
+    if (k <= 0) return 0;
+
+    int* magicNumbers = (int*)malloc(k * sizeof(int));
+    magicNumbers[0] = 1;
+    int index3 = 0, index5 = 0, index7 = 0;
+
+    for (int i = 1; i < k; ++i) {
+        int next3 = magicNumbers[index3] * 3;
+        int next5 = magicNumbers[index5] * 5;
+        int next7 = magicNumbers[index7] * 7;
+
+        int nextMagicNumber = (next3 < next5) ? ((next3 < next7) ? next3 : next7) : ((next5 < next7) ? next5 : next7);
+        magicNumbers[i] = nextMagicNumber;
+
+        if (nextMagicNumber == next3) ++index3;
+        if (nextMagicNumber == next5) ++index5;
+        if (nextMagicNumber == next7) ++index7;
+    }
+
+    int result = magicNumbers[k - 1];
+    free(magicNumbers);
+
+    return result;
+}
+//----------------------------------------------------
+//LRC 166. 珠宝的最高价值
+int jewelleryValue(int** grid, int gridSize, int* gridColSize){
+    int m=gridSize,n=gridColSize[0];
+    int f[m][n];
+    memset(f,0,sizeof(f));
+    //从左上角开始(0,0)
+    for(int i=0;i<m;i++){
+        for(int j=0;j<n;j++){
+            //i>0说明已经上面有元素
+            if(i>0){
+                f[i][j]=f[i][j]>f[i-1][j]?f[i][j]:f[i-1][j];
+            }
+            if(j>0){
+            //j>0说明以及左边有元素
+                f[i][j]=f[i][j]>f[i][j-1]?f[i][j]:f[i][j-1];
+            }
+            //f[i][j]的值是上面和左边的的最大的一边
+            f[i][j]+=grid[i][j];
+        }
+    }
+    return f[m-1][n-1];
+}
+//----------------------------------------------------
+

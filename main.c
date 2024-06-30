@@ -165,37 +165,164 @@
 
 //-----------------------------------------------------
 //1260
-void printGrid(int** grid, int rows, int cols) {
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            printf("%d ", grid[i][j]);
-        }
-        printf("\n");
-    }
-}
+// void printGrid(int** grid, int rows, int cols) {
+//     for (int i = 0; i < rows; i++) {
+//         for (int j = 0; j < cols; j++) {
+//             printf("%d ", grid[i][j]);
+//         }
+//         printf("\n");
+//     }
+// }
 
+// int main() {
+//     int grid[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+//     int* gridPtr[3];
+//     for (int i = 0; i < 3; i++) {
+//         gridPtr[i] = grid[i];   //将二维数组的每一行的首地址存储在一维数组中
+//     }
+//     int gridCol = 3;
+//     int k = 1;
+//     int returnSize;
+//     int* returnCol;
+// // int** shiftGrid(int** grid, int row, int* gridCol, int k, int* returnSize, int** returnCol);
+//     int** result = shiftGrid(gridPtr, 3, &gridCol, k, &returnSize, &returnCol);
+
+//     printf("Shifted Grid:\n");
+//     printGrid(result, returnSize, gridCol);
+
+//     // 释放分配的内存
+//     for (int i = 0; i < returnSize; i++) {
+//         free(result[i]);
+//     }
+//     free(result);
+//     free(returnCol);
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//1122
+// int main() {
+//     int arr1[] = {2, 3, 1, 3, 2, 4, 6, 7, 9, 2, 19};
+//     int arr2[] = {2, 1, 4, 3, 9, 6};
+//     int arr1Size = sizeof(arr1) / sizeof(arr1[0]);
+//     int arr2Size = sizeof(arr2) / sizeof(arr2[0]);
+//     int returnSize;
+
+//     int* result = relativeSortArray(arr1, arr1Size, arr2, arr2Size, &returnSize);
+
+//     printf("Sorted array: ");
+//     for (int i = 0; i < returnSize; i++) {
+//         printf("%d ", result[i]);
+//     }
+//     printf("\n");
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//1313
+// int main() {
+//     int nums[] = {1, 2, 3, 4};
+//     int numsSize = sizeof(nums) / sizeof(nums[0]);
+//     int returnSize;
+    
+//     int* result = decompressRLElist(nums, numsSize, &returnSize);
+    
+//     printf("Decompressed list: ");
+//     for (int i = 0; i < returnSize; i++) {
+//         printf("%d ", result[i]);
+//     }
+//     printf("\n");
+    
+//     free(result);  // 释放动态分配的内存
+//     return 0;
+// }
+//-----------------------------------------------------
+//1351
+// int main() {
+//     int grid[4][4] = {
+//         {-4, 3, -2, -1},
+//         {3, 2, 1, -1},
+//         {1, 1, -1, -2},
+//         {-1, -1, -2, -3}
+//     };
+//     int* gridColSize = (int*)malloc(4 * sizeof(int));
+//     for (int i = 0; i < 4; i++) {
+//         gridColSize[i] = 4;
+//     }
+//     int** gridPtr = (int**)malloc(4 * sizeof(int*));
+//     for (int i = 0; i < 4; i++) {
+//         gridPtr[i] = grid[i];
+//     }
+
+//     int gridSize = 4;
+//     int result = countNegatives(gridPtr, gridSize, gridColSize);
+
+//     printf("Number of negatives in the grid: %d\n", result);
+
+//     free(gridColSize);
+//     free(gridPtr);
+//     return 0;
+// }
+//-----------------------------------------------------
+//1403
+// int main() {
+//     int nums[] = {4, 3, 10, 9, 8};
+//     int numsSize = sizeof(nums) / sizeof(nums[0]);
+//     int returnSize;
+    
+//     int* result = minSubsequence(nums, numsSize, &returnSize);
+    
+//     printf("The resulting subsequence is: ");
+//     for (int i = 0; i < returnSize; i++) {
+//         printf("%d ", result[i]);
+//     }
+//     printf("\n");
+    
+//     free(result);
+//     return 0;
+// }
+//-----------------------------------------------------
+//中等
+//面试题 16.04 井字游戏
+// int main() {
+//     char* board[] = {"O X", " XO", "X O"};
+//     int boardSize = sizeof(board) / sizeof(board[0]);
+    
+//     char* result = tictactoe(board, boardSize);
+    
+//     printf("The result of the game is: %s\n", result);
+    
+//     return 0;
+// }
+//-----------------------------------------------------
+//面试题 17.09 第 k 个数
+// int main() {
+//     int k = 10;
+//     int result = getKthMagicNumber(k);
+//     printf("The %dth magic number is: %d\n", k, result);
+//     return 0;
+// }
+//-----------------------------------------------------
+//LRC 166. 珠宝的最高价值
 int main() {
-    int grid[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-    int* gridPtr[3];
-    for (int i = 0; i < 3; i++) {
-        gridPtr[i] = grid[i];   //将二维数组的每一行的首地址存储在一维数组中
-    }
-    int gridCol = 3;
-    int k = 1;
-    int returnSize;
-    int* returnCol;
-// int** shiftGrid(int** grid, int row, int* gridCol, int k, int* returnSize, int** returnCol);
-    int** result = shiftGrid(gridPtr, 3, &gridCol, k, &returnSize, &returnCol);
+    int gridSize = 3;
+    int gridColSize[3] = {3, 3, 3};
 
-    printf("Shifted Grid:\n");
-    printGrid(result, returnSize, gridCol);
+    int** grid = (int**)malloc(gridSize * sizeof(int*));
+    grid[0] = (int[]) {1, 3, 1};
+    grid[1] = (int[]) {1, 5, 1};
+    grid[2] = (int[]) {4, 2, 1};
 
-    // 释放分配的内存
-    for (int i = 0; i < returnSize; i++) {
-        free(result[i]);
-    }
-    free(result);
-    free(returnCol);
+    int result = jewelleryValue(grid, gridSize, gridColSize);
+    printf("Maximum jewellery value: %d\n", result);
+
+    // Free allocated memory
+    free(grid);
 
     return 0;
 }
+//-----------------------------------------------------
+
+
+
+
