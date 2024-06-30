@@ -118,10 +118,84 @@
 //-----------------------------------------------------
 //2103
 
-int main() {
-    char rings[] = "B0B6G0R6R0R6G9";
-    int result = countPoints(rings);
-    printf("Number of rods with all three colors: %d\n", result);
-    return 0;
+// int main() {
+//     char rings[] = "B0B6G0R6R0R6G9";
+//     int result = countPoints(rings);
+//     printf("Number of rods with all three colors: %d\n", result);
+//     return 0;
+// }
+
+//-----------------------------------------------------
+//1377
+// int main() {
+//     // 示例 1 输入
+//     int mat[5][5] = {
+//         {1, 1, 0, 0, 0},
+//         {1, 1, 1, 1, 0},
+//         {1, 0, 0, 0, 0},
+//         {1, 1, 0, 0, 0},
+//         {1, 1, 1, 1, 1}
+//     };
+//     int matSize = 5;    // 二维数组的行数
+//     int matColSize = 5;     // 二维数组的列数
+//     int k = 3;          // 要返回的结果的数量
+//     int returnSize;         // 返回的结果的数量
+
+//     // 转换为指针数组
+//     int* matPtr[5];
+//     for (int i = 0; i < 5; i++) {
+//         matPtr[i] = mat[i];
+//     }
+
+//     // 调用函数
+//     int* result = kWeakestRows(matPtr, matSize, &matColSize, k, &returnSize);
+
+//     // 输出结果
+//     printf("The indexes of the %d weakest rows are: ", k);
+//     for (int i = 0; i < returnSize; i++) {
+//         printf("%d ", result[i]);
+//     }
+//     printf("\n");
+
+//     // 释放分配的内存
+//     free(result);
+
+//     return 0;
+// }
+
+//-----------------------------------------------------
+//1260
+void printGrid(int** grid, int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            printf("%d ", grid[i][j]);
+        }
+        printf("\n");
+    }
 }
 
+int main() {
+    int grid[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    int* gridPtr[3];
+    for (int i = 0; i < 3; i++) {
+        gridPtr[i] = grid[i];   //将二维数组的每一行的首地址存储在一维数组中
+    }
+    int gridCol = 3;
+    int k = 1;
+    int returnSize;
+    int* returnCol;
+// int** shiftGrid(int** grid, int row, int* gridCol, int k, int* returnSize, int** returnCol);
+    int** result = shiftGrid(gridPtr, 3, &gridCol, k, &returnSize, &returnCol);
+
+    printf("Shifted Grid:\n");
+    printGrid(result, returnSize, gridCol);
+
+    // 释放分配的内存
+    for (int i = 0; i < returnSize; i++) {
+        free(result[i]);
+    }
+    free(result);
+    free(returnCol);
+
+    return 0;
+}

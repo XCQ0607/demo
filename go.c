@@ -146,13 +146,14 @@ int countPoints(char* rings) {
 // d['R'] = 1; 表示红色环的位标志为 1（二进制 001）。
 // d['G'] = 2; 表示绿色环的位标志为 2（二进制 010）。
 // d['B'] = 4; 表示蓝色环的位标志为 4（二进制 100）。
+//以2进一个1,2^1(10)=010(2),2^2(10)=100(2),2^3(10)=1000(2)
 
     int mask[10];
     memset(mask, 0, sizeof(mask));
 
     for (int i = 0, n = strlen(rings); i < n; i += 2) {
-        int c = rings[i];
-        int j = rings[i + 1] - '0';
+        int c = rings[i];   //获取颜色
+        int j = rings[i + 1] - '0';     //获取位置，这里-'0'是获取位置的数字，因为char类型的数字是ASCII码值，所以需要减去'0'来获取数字
         mask[j] |= d[c];
     }
 
@@ -165,3 +166,98 @@ int countPoints(char* rings) {
 
     return ans;
 }
+//----------------------------------------------------
+//1377
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int comp(const void *a, const void *b)      //从小到大排序
+{
+    return *(int*)a - *(int*)b;         //返回负数不换位置
+}
+int* kWeakestRows(int** mat, int matSize, int* matColSize, int k, int* returnSize) 
+{
+    int *ret = malloc(sizeof(int) * k);         //ret数组用于表示
+    int *hash = malloc(sizeof(int) * matSize);
+    for(int i = 0; i < matSize; i++)
+    {
+        int count = 0;
+        for(int j = 0; j < * matColSize; j++)
+        {
+            if(mat[i][j] == 1)
+            {
+                count++;
+            }
+        }
+        hash[i] = count * 100 + i;  //方便找索引
+// 第 0 行：2 个军人，hash[0] = 2 * 100 + 0 = 200
+// 第 1 行：4 个军人，hash[1] = 4 * 100 + 1 = 401
+// 第 2 行：1 个军人，hash[2] = 1 * 100 + 2 = 102
+// 第 3 行：2 个军人，hash[3] = 2 * 100 + 3 = 203
+// 第 4 行：5 个军人，hash[4] = 5 * 100 + 4 = 504
+//妙处在这，hash[i] = count * 100 + i;隐性地将索引和军人数量结合起来，在后面只需将hash[i] % 100 即可获取索引
+//局限在当索引足够大时，大于100，hash[i]的结果可能会在含义上上被误解
+    }
+    qsort(hash, matSize, sizeof(int), comp);
+    int j = 0;
+    for(int i = 0; i < k; i++)
+    {
+        ret[j++] = hash[i] % 100;   //转化为索引
+    }
+    * returnSize = k;
+    return ret;
+}
+
+//----------------------------------------------------
+//1260
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** shiftGrid(int** grid, int row, int* gridCol, int k, int* returnSize, int** returnCol)
+{
+    int col = *gridCol;
+    *returnSize = row;
+    *returnCol = (int*)malloc(sizeof(int) * row);
+    int** ans = (int**)malloc(sizeof(int*) * row);      //用于储存位移k次后的矩阵的二维数组
+    k %= (row * col);
+    for(int i = 0; i < row; i++)    //行
+    {
+        (*returnCol)[i] = col;
+        ans[i] = (int*)malloc(sizeof(int) * col);
+        for(int j = 0; j < col; j++)        //列
+        {       
+            int id =  (row * col + i * col + j - k ) % (row * col);     //col是列数，
+//为了更方便地处理矩阵中的元素，我们将二维矩阵的索引 (i, j) 转换为一维索引 i * col + j。这个索引表示当前元素在一维数组中的位置。
+// i * col + j 将二维索引转换为一维索引。
+// 减去 k 实现元素左移 k 次。
+// 加上 row * col 防止负索引。
+// 取模 % (row * col) 确保索引在有效范围内。
+            ans[i][j] = grid[id / col][id % col];
+            //这里的id/col是行，id%col是列,脑子里想矩阵就懂了
+        }
+    }
+    return ans;
+}
+
+/*
+*   Y(B)  x(A)
+*   *     *
+*   *     *
+
+k=1
+
+*   *(B)  Y(A)
+x   *     *
+*   *     *
+
+你想要A位置的数据正确，那么就得让位置的Y移到A位置，那么这里得到需填充的值grid[id / col][id % col]的id值就得-k
+*/
+
+//----------------------------------------------------
