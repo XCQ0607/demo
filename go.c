@@ -138,11 +138,14 @@ int** findDifference(int* nums1, int nums1Size, int* nums2, int nums2Size, int* 
 //2103
 #include <string.h>
 int countPoints(char* rings) {
-    int d['Z'];
+    int d['Z'];     //这里的'z'是ASCII码表中Z的ASCII码值，为90，目的是设置d的大小以容纳所有可能的颜色
     memset(d, 0, sizeof(d));
-    d['R'] = 1;
+    d['R'] = 1;     //这里将R的ASCII码值(82)映射特定的位标志（1, 2, 4）
     d['G'] = 2;
     d['B'] = 4;
+// d['R'] = 1; 表示红色环的位标志为 1（二进制 001）。
+// d['G'] = 2; 表示绿色环的位标志为 2（二进制 010）。
+// d['B'] = 4; 表示蓝色环的位标志为 4（二进制 100）。
 
     int mask[10];
     memset(mask, 0, sizeof(mask));
