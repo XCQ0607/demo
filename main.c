@@ -304,24 +304,87 @@
 // }
 //-----------------------------------------------------
 //LRC 166. 珠宝的最高价值
+// int main() {
+//     int gridSize = 3;
+//     int gridColSize[3] = {3, 3, 3};
+
+//     int** grid = (int**)malloc(gridSize * sizeof(int*));
+//     grid[0] = (int[]) {1, 3, 1};
+//     grid[1] = (int[]) {1, 5, 1};
+//     grid[2] = (int[]) {4, 2, 1};
+
+//     int result = jewelleryValue(grid, gridSize, gridColSize);
+//     printf("Maximum jewellery value: %d\n", result);
+
+//     // Free allocated memory
+//     free(grid);
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//81
+// int main() {
+//     int nums[] = {2, 5, 6, 0, 0, 1, 2};
+//     int numsSize = sizeof(nums) / sizeof(nums[0]);
+//     int target = 0;
+
+//     if (search(nums, numsSize, target)) {
+//         printf("true\n");
+//     } else {
+//         printf("false\n");
+//     }
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//91
+// int main() {
+//     // 示例1
+//     char s1[] = "12";
+//     printf("解码方法的总数（%s）：%d\n", s1, numDecodings(s1));
+
+//     // 示例2
+//     char s2[] = "226";
+//     printf("解码方法的总数（%s）：%d\n", s2, numDecodings(s2));
+
+//     // 示例3
+//     char s3[] = "06";
+//     printf("解码方法的总数（%s）：%d\n", s3, numDecodings(s3));
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//2065
+#include <math.h>
 int main() {
-    int gridSize = 3;
-    int gridColSize[3] = {3, 3, 3};
+    // 示例1的输入
+    int values[] = {0, 32, 10, 43};
+    int valuesSize = sizeof(values) / sizeof(values[0]);
 
-    int** grid = (int**)malloc(gridSize * sizeof(int*));
-    grid[0] = (int[]) {1, 3, 1};
-    grid[1] = (int[]) {1, 5, 1};
-    grid[2] = (int[]) {4, 2, 1};
+    int edgesSize = 3;
+    int edgesColSize[] = {3, 3, 3};
+    int** edges = (int**)malloc(edgesSize * sizeof(int*));
+    for (int i = 0; i < edgesSize; i++) {
+        edges[i] = (int*)malloc(edgesColSize[i] * sizeof(int));
+    }
+    edges[0][0] = 0; edges[0][1] = 1; edges[0][2] = 10;
+    edges[1][0] = 1; edges[1][1] = 2; edges[1][2] = 15;
+    edges[2][0] = 0; edges[2][1] = 3; edges[2][2] = 10;
 
-    int result = jewelleryValue(grid, gridSize, gridColSize);
-    printf("Maximum jewellery value: %d\n", result);
+    int maxTime = 49;
 
-    // Free allocated memory
-    free(grid);
+    // 调用函数并输出结果
+    int result = maximalPathQuality(values, valuesSize, edges, edgesSize, edgesColSize, maxTime);
+    printf("最大路径价值: %d\n", result);
+
+    // 释放内存
+    for (int i = 0; i < edgesSize; i++) {
+        free(edges[i]);
+    }
+    free(edges);
 
     return 0;
 }
-//-----------------------------------------------------
 
 
 

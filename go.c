@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 //----------------------------------------------------
+//2389
 // 比较函数，用于 qsort
 int cmp(const void* a, const void* b) {
     return (*(int*)a - *(int*)b);       //升序排列
@@ -529,6 +530,99 @@ int jewelleryValue(int** grid, int gridSize, int* gridColSize){
         }
     }
     return f[m-1][n-1];
+}
+//----------------------------------------------------
+//81
+#include <stdbool.h>
+bool search(int* nums, int numsSize, int target) {
+    int i;
+    for(i = 0; i< numsSize;i++){
+        if(nums[i] == target)
+        {return true;}
+    }
+    return false;
+}
+//----------------------------------------------------
+//91
+int numDecodings(char* s) {
+    int length = strlen(s);
+    int i, k, n = length + 1;
+    int dp[n], nums[n];
+    dp[0] = 1;
+    // 字符数组化为整数数组
+    for (i = 1; i < n; i++) { 
+        dp[i] = 0;
+        nums[i] = s[i - 1] - 48;
+    }
+    if (nums[1] == 0) {
+        return 0;
+    } else {
+        dp[1] = 1;
+    }
+
+    for (i = 2; i < n; i++) {
+
+        k = nums[i - 1] * 10 + nums[i];
+        if (nums[i] == 0 && (k >= 30 || k == 0)) { 
+            // 1.第i位单独解释不了(即等于0)，加上前一位也还是解释不了(此时前一位>=3)，则无解
+            return 0; 
+        } else if (nums[i] == 0) { 
+            // 2.第i位单独解释不了，但是加上前一位可以解释
+            dp[i] = dp[i - 2]; //这两个数必放一起解释
+
+        } else if (nums[i] != 0) { 
+            // 3.第i位单独可以解释
+            if (k > 26 || k < 10) {
+                // 3.1加上前一位不行
+                dp[i] = dp[i - 1];//这一个数必须单独解释
+            } else {
+                // 3.2加上前一位可以
+                dp[i] = dp[i - 1] + dp[i - 2];//这个i-2是倒数第二位与倒数第一位连体后的解释数
+            }
+        }
+    }
+    return dp[n - 1];
+}
+//----------------------------------------------------
+//2065
+int map[1002][4][2];
+int length[1002];
+int *V;
+int path[1002];
+int max;
+void dfs(int pos,int start,int value,int len,int bound){
+    // pos: 当前节点的位置。
+    // start: 起始节点（在这里是节点 0）。
+    // value: 当前路径的价值。
+    // len: 当前路径的总时间。
+    // bound: 最大允许的时间，即 maxTime。
+    int i,FLAG=0;
+    if(path[pos]==0){value+=V[pos];path[pos]=1;FLAG=1;}
+    if(pos==start){
+        max=fmax(max,value);
+    }
+    for(i=0;i<length[pos];i++){
+        if(len+map[pos][i][1]>bound)continue;
+        else dfs(map[pos][i][0],start,value,len+map[pos][i][1],bound);
+    }
+    if(FLAG==1)path[pos]=0;
+    return ;
+}
+
+
+int maximalPathQuality(int* values, int valuesSize, int** edges, int edgesSize, int* edgesColSize, int maxTime){
+    //memset(map,0,sizeof(map)); 
+    memset(length,0,sizeof(length)); 
+    V=values;
+     int i,j,k,res=0;
+    for(i=0;i<edgesSize;i++){
+        int left=edges[i][0],right=edges[i][1],len=edges[i][2];
+        map[left][length[left]][0]=right;  map[left][length[left]++][1]=len; 
+        map[right][length[right]][0]=left;  map[right][length[right]++][1]=len;
+    }
+        max=0; dfs(0,0,0,0,maxTime);
+        res=fmax(res,max);
+    return res;
 }
 //----------------------------------------------------
 
