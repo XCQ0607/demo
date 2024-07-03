@@ -11,13 +11,13 @@ stdio.h
 -
 stdlib.h
 -
+math.h
+-
 string.h
 -
 stdbool.h
 -
-math.h
--
-string.h
+limits.h
 -
 
 /cloudide/workspace/DEMO/main.c
@@ -29,8 +29,6 @@ go.c
 /cloudide/workspace/DEMO/go.c
 new.c
 /cloudide/workspace/DEMO/new.c
-math.h
--
 
 /cloudide/workspace/DEMO/new.c
 stdio.h

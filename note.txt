@@ -1,6 +1,5 @@
 模板
 ----------------------------------------------------
-
 题目:
 
 解答：
@@ -12,12 +11,10 @@ main.c文件:
 
 1.请帮我写main.c中的main函数，调用go.c中的函数并传入参数
 
-2.通过示例1详细和我讲一下这个代码发了执行过程。最好使用图形化的方式帮助理解。
+2.通过示例1详细和我讲一下这个代码从main函数开始发的执行过程。最好使用图形化的方式帮助理解。
 
 3.如果解决代码使用了某种算法，请向我说明并介绍它
 
-
-细解释一下这个问题，最好使用图形化的方式帮助理解。
 ----------------------------------------------------
 
 2389
@@ -1317,4 +1314,792 @@ int maximalPathQuality(int* values, int valuesSize, int** edges, int edgesSize, 
 
 
 -----------------------------------------------------
+3099
+题目:
+如果一个整数能够被其各个数位上的数字之和整除，则称之为 哈沙德数（Harshad number）。给你一个整数 x 。如果 x 是 哈沙德数 ，则返回 x 各个数位上的数字之和，否则，返回 -1 。
 
+示例 1：
+输入： x = 18
+输出： 9
+解释：
+x 各个数位上的数字之和为 9 。18 能被 9 整除。因此 18 是哈沙德数，答案是 9 。
+示例 2：
+输入： x = 23
+输出： -1
+解释：
+x 各个数位上的数字之和为 5 。23 不能被 5 整除。因此 23 不是哈沙德数，答案是 -1 。
+解答：
+go.c文件
+int sumOfTheDigitsOfHarshadNumber(int x) {
+    int s = 0;
+    for (int v = x; v; v /= 10) {
+        s += v % 10;
+    }
+    return x % s ? -1 : s;
+}
+-------------------------------------------------------
+589
+题目:
+给定一个 n 叉树的根节点  root ，返回 其节点值的 前序遍历 。
+n 叉树 在输入中按层序遍历进行序列化表示，每组子节点由空值 null 分隔（请参见示例）。
+
+示例 1：
+输入：root = [1,null,3,2,4,null,5,6]
+输出：[1,3,5,6,2,4]
+示例 2：
+输入：root = [1,null,2,3,4,5,null,null,6,7,null,8,null,9,10,null,null,11,null,12,null,13,null,null,14]
+输出：[1,2,3,6,7,11,14,4,8,12,5,9,13,10]
+解答：
+go.c文件
+#define MAXN 10000
+static int buff[MAXN], next;
+
+int* helper(struct Node *root);
+
+int* preorder(struct Node *root, int *returnSize) {
+    next = 0;
+    helper(root);
+    int *res = (int*)malloc(sizeof(int) * next);
+    memcpy(res, buff, sizeof(int) * next);
+    *returnSize = next;
+    return res;
+}
+
+int* helper(struct Node *root) {
+    if (!root) return NULL;
+    buff[next++] = root->val;
+    for (int i = 0; i < root->numChildren; ++i)
+        helper(root->children[i]);
+    return buff;
+}
+main.c文件:
+#include "go.c"
+
+首先，我们在 main 方法中构造了一个示例1中的 n 叉树：
+
+代码执行过程讲解
+为了详细讲解代码的执行过程，我们将从 main 方法开始，逐步分析每一步的操作。这里的核心任务是对 n 叉树进行前序遍历，并输出遍历结果。前序遍历的顺序是：根节点 -> 子节点1 -> 子节点1的子节点们 -> 子节点2 -> 子节点2的子节点们 -> ... 以此类推。
+
+1. 构造树结构
+首先，我们在 main 方法中构造了一个示例1中的 n 叉树：
+
+createNode 函数
+createNode 函数，它用于创建一个新的节点。
+struct Node* createNode(int val, int numChildren) {         
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));      //分配 sizeof(struct Node) 字节的内存，并将其指针转换为 struct Node* 类型，赋值给 node 变量。
+    node->val = val;  
+    node->numChildren = numChildren;  
+    //将传入的 val 赋值给 node 的 val 属性。
+    //将传入的 numChildren 赋值给 node 的 numChildren 属性。
+    node->children = (struct Node**)malloc(sizeof(struct Node*) * numChildren);
+    //分配 numChildren 个 struct Node* 类型的内存，用于存储子节点指针数组。
+    return node;
+}
+
+
+struct Node {
+    int val;
+    int numChildren;
+    struct Node** children;
+};
+
+// 构造示例1的树
+struct Node* root = createNode(1, 3);   //此时也有了children[0],clildren[1],children[2]，需要储存信息
+struct Node* child1 = createNode(3, 2);     //此时也有了children[0],clildren[1]，需要指向grandchild1和grandchild2,它们两无子节点
+struct Node* child2 = createNode(2, 0);
+struct Node* child3 = createNode(4, 0);
+struct Node* grandchild1 = createNode(5, 0);
+struct Node* grandchild2 = createNode(6, 0);
+
+//子1节点绑定
+root->children[0] = child1;
+root->children[1] = child2;
+root->children[2] = child3;
+//子2节点绑定
+child1->children[0] = grandchild1;
+child1->children[1] = grandchild2;
+
+
+root (0x1000)
++-----------------------+
+| val = 1               |
+| numChildren = 3       |
+| children = 0x2000     |
++-----------------------+
+
+children (0x2000)
++--------------------------+
+| struct Node* children[3] |
+|--------------------------|
+| 0x3000                   |  --> child1
+| 0x4000                   |  --> child2
+| 0x5000                   |  --> child3
++--------------------------+
+
+child1 (0x3000)
++-----------------------+
+| val = 3               |
+| numChildren = 2       |
+| children = 0x6000     |
++-----------------------+
+
+children of child1 (0x6000)
++--------------------------+
+| struct Node* children[2] |
+|--------------------------|
+| 0x7000                   |  --> grandchild1
+| 0x8000                   |  --> grandchild2
++--------------------------+
+
+grandchild1 (0x7000)
++-----------------------+
+| val = 5               |
+| numChildren = 0       |
+| children = NULL       |
++-----------------------+
+
+grandchild2 (0x8000)
++-----------------------+
+| val = 6               |
+| numChildren = 0       |
+| children = NULL       |
++-----------------------+
+
+child2 (0x4000)
++-----------------------+
+| val = 2               |
+| numChildren = 0       |
+| children = NULL       |
++-----------------------+
+
+child3 (0x5000)
++-----------------------+
+| val = 4               |
+| numChildren = 0       |
+| children = NULL       |
++-----------------------+
+
+        1
+       /|\
+      3 2 4
+     / \
+    5   6
+
+
+2. 调用前序遍历函数
+接下来，我们调用 preorder 函数来进行前序遍历：
+int returnSize;
+int* result = preorder(root, &returnSize);
+
+3. preorder 函数
+preorder 函数调用了辅助函数 helper 来进行实际的遍历：
+int* preorder(struct Node *root, int *returnSize) {
+    next = 0;
+    //初始化全局变量 next 为 0。next 用于记录遍历的节点数量。
+    helper(root);
+    //调用辅助函数 helper 进行前序遍历，将节点值存入 buff 数组。
+    int *res = (int*)malloc(sizeof(int) * next);
+    //运行完helpr后，分配 next 个 int 类型的内存，用于存储最终结果。
+    memcpy(res, buff, sizeof(int) * next);
+    //将 buff 数组中的内容复制到 res 数组。
+    *returnSize = next;
+    return res;
+}
+
+4. helper 函数
+helper 函数递归地遍历每个节点：
+int* helper(struct Node *root) {
+    if (!root) return NULL;
+    buff[next++] = root->val;
+    for (int i = 0; i < root->numChildren; ++i)
+        helper(root->children[i]);
+    return buff;
+}
+
+5.执行过程图示
+以下是 helper 函数的执行过程图示：
+int* helper(struct Node *root) {
+    if (!root) return NULL;
+    //检查节点是否为空
+    buff[next++] = root->val;
+    //存储节点值,next++先执行再++
+    for (int i = 0; i < root->numChildren; ++i)
+    //这里i++与++i一样，然而，++i 更高效一些，因为它直接增加并返回增加后的值，而 i++ 则需要创建一个临时变量保存原始值，再增加后返回原始值。
+        helper(root->children[i]);
+        //root->children[i] 是指 root 节点的第 i 个子节点
+        //递归遍历子节点，绝对不为NULL，因为有numChildren限制则return NULL
+        //numChildren 是一个节点的子节点数量。循环次数是 numChildren，因为我们需要遍历每个子节点。
+    return buff;
+}
+-----------------------------------------------
+225
+题目:
+请你仅使用两个队列实现一个后入先出（LIFO）的栈，并支持普通栈的全部四种操作（push、top、pop 和 empty）。
+实现 MyStack 类：
+void push(int x) 将元素 x 压入栈顶。
+int pop() 移除并返回栈顶元素。
+int top() 返回栈顶元素。
+boolean empty() 如果栈是空的，返回 true ；否则，返回 false 。
+ 
+注意：
+你只能使用队列的标准操作 —— 也就是 push to back、peek/pop from front、size 和 is empty 这些操作。
+你所使用的语言也许不支持队列。 你可以使用 list （列表）或者 deque（双端队列）来模拟一个队列 , 只要是标准的队列操作即可。
+
+示例：
+输入：
+["MyStack", "push", "push", "top", "pop", "empty"]
+[[], [1], [2], [], [], []]
+输出：
+[null, null, null, 2, 2, false]
+解释：
+MyStack myStack = new MyStack();
+myStack.push(1);
+myStack.push(2);
+myStack.top(); // 返回 2
+myStack.pop(); // 返回 2
+myStack.empty(); // 返回 False
+解答：
+go.c文件
+
+#define TAK_LEN 101
+
+typedef struct {
+    int *head;
+    int *tail;
+} MyStack;
+
+
+MyStack* myStackCreate() {
+    MyStack *obj = malloc(sizeof(MyStack));
+    obj->head = malloc(sizeof(int) * TAK_LEN);
+    obj->tail = obj->head;
+    return obj;
+}
+
+void myStackPush(MyStack* obj, int x) {
+    if (obj->tail == obj->head + TAK_LEN - 1)
+        return;
+    
+    obj->tail++;
+    *(obj->tail) = x;
+}
+
+int myStackPop(MyStack* obj) {
+    int tmp;
+    if (obj->tail == obj->head)
+        return 0;
+
+    tmp = *(obj->tail);
+    obj->tail--;
+    return tmp;
+}
+
+int myStackTop(MyStack* obj) {
+    return *(obj->tail);
+}
+
+bool myStackEmpty(MyStack* obj) {
+    if (obj->head == obj->tail)
+        return true;
+    
+    return false;
+}
+
+void myStackFree(MyStack* obj) {
+    free(obj->head);
+    free(obj);
+}
+
+/**
+ * Your MyStack struct will be instantiated and called as such:
+ * MyStack* obj = myStackCreate();
+ * myStackPush(obj, x);
+ 
+ * int param_2 = myStackPop(obj);
+ 
+ * int param_3 = myStackTop(obj);
+ 
+ * bool param_4 = myStackEmpty(obj);
+ 
+ * myStackFree(obj);
+*/
+main.c文件
+int main() {
+    // 创建一个栈实例
+    MyStack* myStack = myStackCreate();
+
+    // 执行操作
+    myStackPush(myStack, 1);
+    myStackPush(myStack, 2);
+
+    int topElement = myStackTop(myStack); // 获取栈顶元素
+    printf("Top element: %d\n", topElement); // 应输出 2
+
+    int poppedElement = myStackPop(myStack); // 弹出栈顶元素
+    printf("Popped element: %d\n", poppedElement); // 应输出 2
+
+    bool isEmpty = myStackEmpty(myStack); // 检查栈是否为空
+    printf("Is stack empty? %s\n", isEmpty ? "true" : "false"); // 应输出 false
+
+    // 释放栈
+    myStackFree(myStack);
+
+    return 0;
+}
+head：指向栈的起始位置。实际上，它总是指向固定的位置（即栈底），用于标识栈的开始。
+tail：指向栈的当前顶端位置。随着栈的操作（如压入和弹出元素），这个指针会动态变化，标识当前栈的顶端。
+
+
+压入元素 1
+执行 push(1) 操作：
+void myStackPush(myStack* obj, int x) {
+    if (obj->tail == TAK_LEN - 1) {
+        return;  // 防止栈溢出
+    }
+    obj->tail++;  // 移动 tail 指针
+    arr[obj->tail] = x;  // 将新元素存储在新的 tail 位置
+}
+此时，tail 向前移动一个位置，arr[1] 存储元素 1：
+myStack:
+    head: 0 -> [ ] [1] [ ] [ ] ... [ ]
+             tail: 1
+压入元素 2
+执行 push(2) 操作：
+void myStackPush(myStack* obj, int x) {
+    if (obj->tail == TAK_LEN - 1) {
+        return;  // 防止栈溢出
+    }
+    obj->tail++;  // 移动 tail 指针
+    arr[obj->tail] = x;  // 将新元素存储在新的 tail 位置
+}
+此时，tail 向前移动一个位置，arr[2] 存储元素 2：
+myStack:
+    head: 0 -> [ ] [1] [2] [ ] ... [ ]
+                  tail: 2
+
+弹出元素 2
+执行 pop 操作：
+int myStackPop(myStack* obj) {
+    if (obj->tail == obj->head) {
+        return 0;  // 如果栈为空，则返回 0（或其他错误码）
+    }
+    int tmp = arr[obj->tail];  // 获取当前 tail 位置的元素
+    obj->tail--;  // 移动 tail 指针
+    return tmp;  // 返回弹出的元素
+}
+此时，tail 向后移动一个位置，栈顶元素 2 被弹出：
+myStack:
+    head: 0 -> [ ] [1] [ ] [ ] ... [ ]
+             tail: 1
+为什么隔一个第一位的arr[0]不填？
+为了arr[obj->tail]指的就是第tail位
+
+获取栈顶元素
+执行 top 操作：
+int myStackTop(myStack* obj) {
+    return arr[obj->tail];  // 返回当前 tail 位置的元素
+}
+返回当前 tail 位置的元素，即 1
+
+检查栈是否为空
+执行 empty 操作：
+bool myStackEmpty(myStack* obj) {
+    return obj->head == obj->tail;  // 如果 head 和 tail 指向同一位置，则栈为空
+}
+此时，head 和 tail 不相同，因此返回 false。
+
+释放栈
+执行 free 操作：
+void myStackFree(myStack* obj) {
+    free(obj);
+}
+----------------------------------------------------------
+232
+题目:
+请你仅使用两个栈实现先入先出队列。队列应当支持一般队列支持的所有操作（push、pop、peek、empty）：
+实现 MyQueue 类：
+void push(int x) 将元素 x 推到队列的末尾
+int pop() 从队列的开头移除并返回元素
+int peek() 返回队列开头的元素
+boolean empty() 如果队列为空，返回 true ；否则，返回 false
+说明：
+你 只能 使用标准的栈操作 —— 也就是只有 push to top, peek/pop from top, size, 和 is empty 操作是合法的。
+你所使用的语言也许不支持栈。你可以使用 list 或者 deque（双端队列）来模拟一个栈，只要是标准的栈操作即可。
+
+示例 1：
+输入：
+["MyQueue", "push", "push", "peek", "pop", "empty"]
+[[], [1], [2], [], [], []]
+输出：
+[null, null, null, 1, 1, false]
+解释：
+MyQueue myQueue = new MyQueue();
+myQueue.push(1); // queue is: [1]
+myQueue.push(2); // queue is: [1, 2] (leftmost is front of the queue)
+myQueue.peek(); // return 1
+myQueue.pop(); // return 1, queue is [2]
+myQueue.empty(); // return false
+解答：
+go.c文件
+typedef struct {
+    int* stk;
+    int stkSize;
+    int stkCapacity;
+} Stack;
+
+Stack* stackCreate(int cpacity) {
+    Stack* ret = malloc(sizeof(Stack));
+    ret->stk = malloc(sizeof(int) * cpacity);
+    ret->stkSize = 0;
+    ret->stkCapacity = cpacity;
+    return ret;
+}
+
+void stackPush(Stack* obj, int x) {
+    obj->stk[obj->stkSize++] = x;
+}
+
+void stackPop(Stack* obj) {
+    obj->stkSize--;
+}
+
+int stackTop(Stack* obj) {
+    return obj->stk[obj->stkSize - 1];
+}
+
+bool stackEmpty(Stack* obj) {
+    return obj->stkSize == 0;
+}
+
+void stackFree(Stack* obj) {
+    free(obj->stk);
+}
+
+typedef struct {
+    Stack* inStack;
+    Stack* outStack;
+} MyQueue;
+
+MyQueue* myQueueCreate() {
+    MyQueue* ret = malloc(sizeof(MyQueue));
+    ret->inStack = stackCreate(100);
+    ret->outStack = stackCreate(100);
+    return ret;
+}
+
+void in2out(MyQueue* obj) {
+    while (!stackEmpty(obj->inStack)) {
+        stackPush(obj->outStack, stackTop(obj->inStack));
+        stackPop(obj->inStack);
+    }
+}
+
+void myQueuePush(MyQueue* obj, int x) {
+    stackPush(obj->inStack, x);
+}
+
+int myQueuePop(MyQueue* obj) {
+    if (stackEmpty(obj->outStack)) {
+        in2out(obj);
+    }
+    int x = stackTop(obj->outStack);
+    stackPop(obj->outStack);
+    return x;
+}
+
+int myQueuePeek(MyQueue* obj) {
+    if (stackEmpty(obj->outStack)) {
+        in2out(obj);
+    }
+    return stackTop(obj->outStack);
+}
+
+bool myQueueEmpty(MyQueue* obj) {
+    return stackEmpty(obj->inStack) && stackEmpty(obj->outStack);
+}
+
+void myQueueFree(MyQueue* obj) {
+    stackFree(obj->inStack);
+    stackFree(obj->outStack);
+}
+
+图形表示：
+初始状态：
+myQueue:
+    inStack:  []
+    outStack: []
+push(1) 后：
+myQueue:
+    inStack:  [1]
+    outStack: []
+push(2) 后：
+myQueue:
+    inStack:  [1, 2]
+    outStack: []
+peek() 触发 in2out 后：
+myQueue:
+    inStack:  []
+    outStack: [2, 1]
+pop() 弹出 1 后：
+myQueue:
+    inStack:  []
+    outStack: [2]
+算法介绍
+这个解决方案使用了两个栈来模拟队列操作，以下是主要思想：
+Push 操作：总是将新元素压入 inStack。
+Pop 和 Peek 操作：当 outStack 为空时，将 inStack 中的所有元素转移到 outStack，这样 outStack 的栈顶元素就是队列的队首元素。
+Empty 操作：检查 inStack 和 outStack 是否都为空。
+这种方法利用了栈的后入先出（LIFO）特性，通过两个栈反转元素顺序，从而实现了队列的先进先出（FIFO）特性。这种方法的时间复杂度为 O(1) 对于 push 操作，以及摊销的 O(1) 对于 pop 和 peek 操作。
+---------------------------------------------------
+2129
+题目:
+给你一个字符串 title ，它由单个空格连接一个或多个单词组成，每个单词都只包含英文字母。请你按以下规则将每个单词的首字母 大写 ：
+如果单词的长度为 1 或者 2 ，所有字母变成小写。
+否则，将单词首字母大写，剩余字母变成小写。
+请你返回 大写后 的 title 。
+
+示例 1：
+输入：title = "capiTalIze tHe titLe"
+输出："Capitalize The Title"
+解释：
+由于所有单词的长度都至少为 3 ，将每个单词首字母大写，剩余字母变为小写。
+示例 2：
+输入：title = "First leTTeR of EACH Word"
+输出："First Letter of Each Word"
+解释：
+单词 "of" 长度为 2 ，所以它保持完全小写。
+其他单词长度都至少为 3 ，所以其他单词首字母大写，剩余字母小写。
+示例 3：
+输入：title = "i lOve leetcode"
+输出："i Love Leetcode"
+解释：
+单词 "i" 长度为 1 ，所以它保留小写。
+其他单词长度都至少为 3 ，所以其他单词首字母大写，剩余字母小写。
+解答：
+go.c文件
+char * capitalizeTitle(char * title){
+    int len = strlen(title);
+    int j = 0;
+    for (int i = 0; i <= len; i++) {
+        if (title[i] == ' ' || title[i] == '\0') {
+            if (i - j > 2) {
+                title[j] = toupper(title[j]); /* 转为大写 */
+            }
+            j = i + 1; /* 更新起始位置 */
+        } else {
+            title[i] = tolower(title[i]); /* 其余转为小写 */
+        }
+    }
+    return title;
+}
+------------------------------------------------------------------
+303
+题目:
+给定一个整数数组  nums，处理以下类型的多个查询:
+计算索引 left 和 right （包含 left 和 right）之间的 nums 元素的 和 ，其中 left <= right
+实现 NumArray 类：
+NumArray(int[] nums) 使用数组 nums 初始化对象
+int sumRange(int i, int j) 返回数组 nums 中索引 left 和 right 之间的元素的 总和 ，包含 left 和 right 两点（也就是 nums[left] + nums[left + 1] + ... + nums[right] )
+ 
+示例 1：
+输入：
+["NumArray", "sumRange", "sumRange", "sumRange"]
+[[[-2, 0, 3, -5, 2, -1]], [0, 2], [2, 5], [0, 5]]
+输出：
+[null, 1, -1, -3]
+解释：
+NumArray numArray = new NumArray([-2, 0, 3, -5, 2, -1]);
+numArray.sumRange(0, 2); // return 1 ((-2) + 0 + 3)
+numArray.sumRange(2, 5); // return -1 (3 + (-5) + 2 + (-1)) 
+numArray.sumRange(0, 5); // return -3 ((-2) + 0 + 3 + (-5) + 2 + (-1))
+解答：
+go.c文件
+typedef struct {
+    int* presum;
+    int size;
+} NumArray;
+NumArray* numArrayCreate(int* nums, int numsSize) {
+    NumArray* obj=(NumArray*)malloc(sizeof(NumArray));
+    obj->presum=(int*)malloc((numsSize+1)*sizeof(int));
+    obj->size=numsSize+1;
+    obj->presum[0]=0;
+    for(int i=1;i<obj->size;i++)
+    {
+        obj->presum[i]=obj->presum[i-1]+nums[i-1];
+    }
+    return obj;
+}
+int numArraySumRange(NumArray* obj, int left, int right) {
+    return obj->presum[right+1]-obj->presum[left];
+}
+void numArrayFree(NumArray* obj) {
+    free(obj->presum);
+    free(obj);
+}
+/**
+ * Your NumArray struct will be instantiated and called as such:
+ * NumArray* obj = numArrayCreate(nums, numsSize);
+ * int param_1 = numArraySumRange(obj, left, right);
+ 
+ * numArrayFree(obj);
+*/
+
+1. 创建 NumArray 对象
+调用 numArrayCreate 函数：
+执行步骤如下：
+初始化 presum 数组，大小为 numsSize + 1，初始值为 0。
+计算前缀和数组 presum，其中 presum[i] 表示从 nums[0] 到 nums[i-1] 的累积和。
+
+对于输入数组 nums = {-2, 0, 3, -5, 2, -1}，计算结果为：
+presum = [0, -2, -2, 1, -4, -2, -3]
+
+2. 调用 sumRange 函数
+通过调用 numArraySumRange 函数计算区间和：
+执行步骤如下：
+对于 sumRange(0, 2)：   //index:0,1,2三个数的和
+presum[3] - presum[0] = 1 - 0 = 1   //presum[0]是初始化的0，后面presum[1]才对应的nums[0]
+返回结果为 1。
+
+对于 sumRange(2, 5)：
+presum[6] - presum[2] = -3 - (-2) = -1
+返回结果为 -1。
+
+对于 sumRange(0, 5)：
+presum[6] - presum[0] = -3 - 0 = -3
+返回结果为 -3。
+
+3. 释放内存
+调用 numArrayFree 函数释放内存
+
+算法介绍
+这个解决方案采用了前缀和（Prefix Sum）算法：
+前缀和数组：在初始化时，计算出前缀和数组 presum，其中 presum[i] 表示从 nums[0] 到 nums[i-1] 的累积和。
+快速查询区间和：通过计算 presum[right + 1] - presum[left]，可以快速得到区间 [left, right] 的和。
+------------------------------------------
+2908
+题目:
+给你一个下标从 0 开始的整数数组 nums 。
+如果下标三元组 (i, j, k) 满足下述全部条件，则认为它是一个 山形三元组 ：
+i < j < k
+nums[i] < nums[j] 且 nums[k] < nums[j]
+请你找出 nums 中 元素和最小 的山形三元组，并返回其 元素和 。如果不存在满足条件的三元组，返回 -1 。
+
+示例 1：
+输入：nums = [8,6,1,5,3]
+输出：9
+解释：三元组 (2, 3, 4) 是一个元素和等于 9 的山形三元组，因为： 
+- 2 < 3 < 4
+- nums[2] < nums[3] 且 nums[4] < nums[3]
+这个三元组的元素和等于 nums[2] + nums[3] + nums[4] = 9 。可以证明不存在元素和小于 9 的山形三元组。
+示例 2：
+输入：nums = [5,4,8,7,10,2]
+输出：13
+解释：三元组 (1, 3, 5) 是一个元素和等于 13 的山形三元组，因为： 
+- 1 < 3 < 5 
+- nums[1] < nums[3] 且 nums[5] < nums[3]
+这个三元组的元素和等于 nums[1] + nums[3] + nums[5] = 13 。可以证明不存在元素和小于 13 的山形三元组。
+示例 3：
+输入：nums = [6,5,4,3,4,5]
+输出：-1
+解释：可以证明 nums 中不存在山形三元组。
+解答：
+go.c文件
+#include <limits.h>
+int minimumSum(int* nums, int numsSize) {
+    if (numsSize < 3) return -1;
+
+    int leftMin[numsSize], rightMin[numsSize];
+    leftMin[0] = INT_MAX;
+    rightMin[numsSize - 1] = INT_MAX;
+
+    // Fill leftMin array
+    for (int i = 1; i < numsSize; i++) {
+        leftMin[i] = (nums[i - 1] < leftMin[i - 1]) ? nums[i - 1] : leftMin[i - 1];
+    }
+
+    // Fill rightMin array
+    for (int i = numsSize - 2; i >= 0; i--) {
+        rightMin[i] = (nums[i + 1] < rightMin[i + 1]) ? nums[i + 1] : rightMin[i + 1];
+    }
+
+    int minSum = INT_MAX;
+    int found = 0;
+
+    // Find the minimum sum of mountain triplets
+    for (int j = 1; j < numsSize - 1; j++) {
+        if (nums[j] > leftMin[j] && nums[j] > rightMin[j]) {
+            int currentSum = nums[j] + leftMin[j] + rightMin[j];
+            if (currentSum < minSum) {
+                minSum = currentSum;
+                found = 1;
+            }
+        }
+    }
+
+    return found ? minSum : -1;
+}
+main.c文件:
+int main() {
+    int nums1[] = {8, 6, 1, 5, 3};
+    int numsSize1 = sizeof(nums1) / sizeof(nums1[0]);
+    printf("Minimum sum for nums1: %d\n", minimumSum(nums1, numsSize1)); // 应输出 9
+
+    int nums2[] = {5, 4, 8, 7, 10, 2};
+    int numsSize2 = sizeof(nums2) / sizeof(nums2[0]);
+    printf("Minimum sum for nums2: %d\n", minimumSum(nums2, numsSize2)); // 应输出 13
+
+    int nums3[] = {6, 5, 4, 3, 4, 5};
+    int numsSize3 = sizeof(nums3) / sizeof(nums3[0]);
+    printf("Minimum sum for nums3: %d\n", minimumSum(nums3, numsSize3)); // 应输出 -1
+
+    return 0;
+}
+
+main 函数中，定义了数组 nums1 和其大小 numsSize1。
+调用 minimumSum(nums1, numsSize1)。
+
+在 minimumSum 函数中
+检查 numsSize 是否小于3，若小于3，直接返回 -1。此示例 numsSize = 5，不小于3，继续执行。
+初始化 leftMin 和 rightMin 数组
+leftMin 初始化为 [INT_MAX, INT_MAX, INT_MAX, INT_MAX, INT_MAX]
+rightMin 初始化为 [INT_MAX, INT_MAX, INT_MAX, INT_MAX, INT_MAX]
+leftMin[0] = INT_MAX
+rightMin[4] = INT_MAX （rightMin 的最后一个元素）
+Initial arrays:
+leftMin  = [INT_MAX,  ,  ,  ,  ]
+rightMin = [ ,  ,  ,  , INT_MAX]
+
+填充 leftMin 数组
+遍历 nums 从第二个元素到最后一个元素，逐步填充 leftMin 数组：
+i = 1：leftMin[1] = min(INT_MAX, 8) = 8
+i = 2：leftMin[2] = min(8, 6) = 6
+i = 3：leftMin[3] = min(6, 1) = 1
+i = 4：leftMin[4] = min(1, 5) = 1
+Filled leftMin array:
+leftMin  = [INT_MAX, 8, 6, 1, 1]
+
+填充 rightMin 数组
+遍历 nums 从倒数第二个元素到第一个元素，逐步填充 rightMin 数组：
+i = 3：rightMin[3] = min(INT_MAX, 3) = 3
+i = 2：rightMin[2] = min(3, 5) = 3
+i = 1：rightMin[1] = min(3, 1) = 1
+i = 0：rightMin[0] = min(1, 6) = 1
+Filled rightMin array:
+rightMin = [1, 1, 3, 3, INT_MAX]
+rightMin 和 leftMin 是辅助数组，用于存储数组 nums 在不同位置上的前缀和后缀最小值。这两个数组用于帮助快速查找每个位置的左侧和右侧的最小值，从而有效地确定是否存在符合条件的山形三元组。
+leftMin: leftMin[i] 存储的是从数组 nums 开始到位置 i-1 之间的最小值。也就是说，对于每个位置 i，leftMin[i] 表示在 nums 数组中位置 i 左侧的最小值。
+rightMin: rightMin[i] 存储的是从数组 nums 的位置 i+1 到末尾之间的最小值。也就是说，对于每个位置 i，rightMin[i] 表示在 nums 数组中位置 i 右侧的最小值。
+
+查找山形三元组
+遍历 nums 从第二个元素到倒数第二个元素，检查是否满足山形三元组条件，并计算其和：
+j = 1：不满足 nums[1] > leftMin[1] && nums[1] > rightMin[1]。
+j = 2：不满足 nums[2] > leftMin[2] && nums[2] > rightMin[2]。
+j = 3：满足 nums[3] > leftMin[3] && nums[3] > rightMin[3]，计算和 nums[3] + leftMin[3] + rightMin[3] = 5 + 1 + 3 = 9。更新 minSum 为 9。
+Mountain triplet found at j = 3:
+nums[j] = 5, leftMin[j] = 1, rightMin[j] = 3
+Minimum sum: 9
+
+返回结果
+检查 found 是否为 1，是则返回 minSum，否则返回 -1。
+最终返回结果为 9。
+------------------------------------------------

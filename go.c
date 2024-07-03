@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 //----------------------------------------------------
 //2389
@@ -33,7 +34,7 @@ int* answerQueries(int* nums, int numsSize, int* queries, int queriesSize, int* 
 //----------------------------------------------------
 //2180
 
-int getDigitSum(int num) {      //获取数字的各位数之和。
+int getDigitSum(int num) {      //获取数字的各位数之和
     int sum = 0;
     while (num > 0) {
         sum += num % 10;        //获取 num 的最后一位数字。
@@ -623,6 +624,269 @@ int maximalPathQuality(int* values, int valuesSize, int** edges, int edgesSize, 
         max=0; dfs(0,0,0,0,maxTime);
         res=fmax(res,max);
     return res;
+}
+//----------------------------------------------------
+//3099
+int sumOfTheDigitsOfHarshadNumber(int x) {
+    int s = 0;
+    for (int v = x; v; v /= 10) {   //取最后一位
+        s += v % 10;
+        // 计算 x 的各位数字之和
+    }
+    return x % s ? -1 : s;      //x%s==0则返回s，否则返回-1
+}
+//----------------------------------------------------
+//589
+struct Node {
+    int val;
+    int numChildren;        //子节点个数
+    struct Node** children;     //指向子节点的指针数组，因为子节点同样需要储存数据，也是Node类型
+};
+
+
+#define MAXN 10000
+static int buff[MAXN], next;
+
+int* helper(struct Node *root);
+
+int* preorder(struct Node *root, int *returnSize) {
+    next = 0;
+    helper(root);
+    int *res = (int*)malloc(sizeof(int) * next);
+    memcpy(res, buff, sizeof(int) * next);
+    *returnSize = next;
+    return res;
+}
+
+int* helper(struct Node *root) {
+    if (!root) return NULL;
+    buff[next++] = root->val;
+    for (int i = 0; i < root->numChildren; ++i)
+        helper(root->children[i]);
+    return buff;
+}
+//----------------------------------------------------
+//225
+#define TAK_LEN 101
+typedef struct {
+    int *head;
+    int *tail;
+} MyStack;
+
+MyStack* myStackCreate() {
+    MyStack *obj = malloc(sizeof(MyStack));
+    obj->head = malloc(sizeof(int) * TAK_LEN);
+    obj->tail = obj->head;
+    return obj;
+}
+void myStackPush(MyStack* obj, int x) {
+    if (obj->tail == obj->head + TAK_LEN - 1)
+        return;
+    
+    obj->tail++;        // 移动 tail 指针
+    //tail 向前移动一个位置，arr[1] 存储元素 1：
+    *(obj->tail) = x;    // 将新元素存储在新的 tail 位置
+}
+int myStackPop(MyStack* obj) {
+    int tmp;
+    if (obj->tail == obj->head)
+        return 0;
+
+    tmp = *(obj->tail);
+    obj->tail--;
+    return tmp;
+}
+int myStackTop(MyStack* obj) {
+    return *(obj->tail);
+}
+bool myStackEmpty(MyStack* obj) {
+    if (obj->head == obj->tail)
+        return true;
+    
+    return false;
+}
+void myStackFree(MyStack* obj) {
+    free(obj->head);
+    free(obj);
+}
+// void push(int x) 将元素 x 压入栈顶。
+// int pop() 移除并返回栈顶元素。
+// int top() 返回栈顶元素。
+// boolean empty() 如果栈是空的，返回 true ；否则，返回 false
+/**
+ * Your MyStack struct will be instantiated and called as such:
+ * MyStack* obj = myStackCreate();
+ * myStackPush(obj, x);
+ 
+ * int param_2 = myStackPop(obj);
+ 
+ * int param_3 = myStackTop(obj);
+ 
+ * bool param_4 = myStackEmpty(obj);
+ 
+ * myStackFree(obj);
+*/
+//-----------------------------------------------------
+//232
+// void push(int x) 将元素 x 推到队列的末尾
+// int pop() 从队列的开头移除并返回元素
+// int peek() 返回队列开头的元素
+// boolean empty() 如果队列为空，返回 true ；否则，返回 false
+typedef struct {
+    int* stk;   // 栈
+    int stkSize;    // 栈容量
+    int stkCapacity;    // 栈顶
+} Stack;
+Stack* stackCreate(int cpacity) {         // 初始化栈
+    Stack* ret = malloc(sizeof(Stack));
+    ret->stk = malloc(sizeof(int) * cpacity);
+    ret->stkSize = 0;
+    ret->stkCapacity = cpacity;
+    return ret;
+}
+void stackPush(Stack* obj, int x) {     // 入栈
+    obj->stk[obj->stkSize++] = x;
+}
+void stackPop(Stack* obj) {         // 出栈
+    obj->stkSize--;
+}
+int stackTop(Stack* obj) {          // 栈顶
+    return obj->stk[obj->stkSize - 1];
+}
+bool stackEmpty(Stack* obj) {        // 判空
+    return obj->stkSize == 0;
+}
+void stackFree(Stack* obj) {         // 释放栈
+    free(obj->stk);
+}
+
+typedef struct {        // 队列
+    Stack* inStack;      // 输入栈
+    Stack* outStack;        // 输出栈
+} MyQueue;
+MyQueue* myQueueCreate() {         // 初始化队列
+    MyQueue* ret = malloc(sizeof(MyQueue));
+    ret->inStack = stackCreate(100);
+    ret->outStack = stackCreate(100);
+    return ret;
+}
+void in2out(MyQueue* obj) {      // 将输入栈中的元素全部弹出并压入输出栈
+    while (!stackEmpty(obj->inStack)) {
+        stackPush(obj->outStack, stackTop(obj->inStack));
+        stackPop(obj->inStack);
+    }
+}
+void myQueuePush(MyQueue* obj, int x) {      // 元素 x 入队
+    stackPush(obj->inStack, x);
+}
+int myQueuePop(MyQueue* obj) {      // 队首元素出队(out stack)
+    if (stackEmpty(obj->outStack)) {    //若输出栈为空，则将输入栈中的元素全部弹出并压入输出栈
+        in2out(obj);
+    }
+    int x = stackTop(obj->outStack);
+    stackPop(obj->outStack);        // 弹出输出栈的栈顶元素
+    return x;
+}
+int myQueuePeek(MyQueue* obj) {      // 队首元素
+    if (stackEmpty(obj->outStack)) {
+        in2out(obj);
+    }
+    return stackTop(obj->outStack);
+}
+bool myQueueEmpty(MyQueue* obj) {        // 判空
+    return stackEmpty(obj->inStack) && stackEmpty(obj->outStack);
+}
+void myQueueFree(MyQueue* obj) {         // 释放队列
+    stackFree(obj->inStack);
+    stackFree(obj->outStack);
+}
+//----------------------------------------------------
+//2129
+char * capitalizeTitle(char * title){
+    int len = strlen(title);
+    int j = 0;
+    for (int i = 0; i <= len; i++) {
+        if (title[i] == ' ' || title[i] == '\0') {
+            if (i - j > 2) {
+                title[j] = toupper(title[j]); /* 转为大写 */
+            }
+            j = i + 1; /* 更新起始位置 */
+            // 跳过空格或换行符 title[i] == ' ' || title[i] == '\0'
+        } else {
+            title[i] = tolower(title[i]); /* 其余转为小写 */
+        }
+    }
+    return title;
+}
+//----------------------------------------------------
+//303
+typedef struct {
+    int* presum;
+    int size;
+} NumArray;
+NumArray* numArrayCreate(int* nums, int numsSize) {
+    NumArray* obj=(NumArray*)malloc(sizeof(NumArray));
+    obj->presum=(int*)malloc((numsSize+1)*sizeof(int));     //这里的+1是为了防止数组越界
+    obj->size=numsSize+1;
+    obj->presum[0]=0;
+    for(int i=1;i<obj->size;i++)
+    {
+        obj->presum[i]=obj->presum[i-1]+nums[i-1];
+    }
+    return obj;
+}
+int numArraySumRange(NumArray* obj, int left, int right) {
+    return obj->presum[right+1]-obj->presum[left];
+}
+void numArrayFree(NumArray* obj) {
+    free(obj->presum);
+    free(obj);
+}
+/**
+ * Your NumArray struct will be instantiated and called as such:
+ * NumArray* obj = numArrayCreate(nums, numsSize);
+ * int param_1 = numArraySumRange(obj, left, right);
+ 
+ * numArrayFree(obj);
+*/
+//----------------------------------------------------
+//2908
+#include <limits.h>
+
+int minimumSum(int* nums, int numsSize) {
+    if (numsSize < 3) return -1;
+
+    int leftMin[numsSize], rightMin[numsSize];
+//INT_MAX 是一个宏定义，表示整型变量可以表示的最大值。在大多数系统中，INT_MAX 的值为 2147483647，即 32 位有符号整数的最大值。
+    leftMin[0] = INT_MAX;
+    rightMin[numsSize - 1] = INT_MAX;
+
+    // Fill leftMin array
+    for (int i = 1; i < numsSize; i++) {
+        leftMin[i] = (nums[i - 1] < leftMin[i - 1]) ? nums[i - 1] : leftMin[i - 1];
+    }
+
+    // Fill rightMin array
+    for (int i = numsSize - 2; i >= 0; i--) {
+        rightMin[i] = (nums[i + 1] < rightMin[i + 1]) ? nums[i + 1] : rightMin[i + 1];
+    }
+
+    int minSum = INT_MAX;
+    int found = 0;
+
+    // Find the minimum sum of mountain triplets
+    //这里i=1,numsSize-1是为了循环中间元素
+    for (int j = 1; j < numsSize - 1; j++) {
+        if (nums[j] > leftMin[j] && nums[j] > rightMin[j]) {
+            int currentSum = nums[j] + leftMin[j] + rightMin[j];
+            if (currentSum < minSum) {
+                minSum = currentSum;
+                found = 1;
+            }
+        }
+    }
+
+    return found ? minSum : -1;
 }
 //----------------------------------------------------
 

@@ -355,36 +355,203 @@
 // }
 //-----------------------------------------------------
 //2065
-#include <math.h>
+// #include <math.h>
+// int main() {
+//     // 示例1的输入
+//     int values[] = {0, 32, 10, 43};
+//     int valuesSize = sizeof(values) / sizeof(values[0]);
+
+//     int edgesSize = 3;
+//     int edgesColSize[] = {3, 3, 3};
+//     int** edges = (int**)malloc(edgesSize * sizeof(int*));
+//     for (int i = 0; i < edgesSize; i++) {
+//         edges[i] = (int*)malloc(edgesColSize[i] * sizeof(int));
+//     }
+//     edges[0][0] = 0; edges[0][1] = 1; edges[0][2] = 10;
+//     edges[1][0] = 1; edges[1][1] = 2; edges[1][2] = 15;
+//     edges[2][0] = 0; edges[2][1] = 3; edges[2][2] = 10;
+
+//     int maxTime = 49;
+
+//     // 调用函数并输出结果
+//     int result = maximalPathQuality(values, valuesSize, edges, edgesSize, edgesColSize, maxTime);
+//     printf("最大路径价值: %d\n", result);
+
+//     // 释放内存
+//     for (int i = 0; i < edgesSize; i++) {
+//         free(edges[i]);
+//     }
+//     free(edges);
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//3099
+// int main() {
+//     int x = 18; // 示例1
+//     int result = sumOfTheDigitsOfHarshadNumber(x);
+//     printf("Result for %d: %d\n", x, result);
+
+//     x = 23; // 示例2
+//     result = sumOfTheDigitsOfHarshadNumber(x);
+//     printf("Result for %d: %d\n", x, result);
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//589
+// 创建节点的帮助函数
+// struct Node* createNode(int val, int numChildren) {     
+//     struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+//     node->val = val;    
+//     node->numChildren = numChildren;
+//     node->children = (struct Node**)malloc(sizeof(struct Node*) * numChildren);
+//     return node;
+// }
+
+// // 主函数
+// int main() {
+//     // 构造示例1的树
+//     struct Node* root = createNode(1, 3);
+//     struct Node* child1 = createNode(3, 2);
+//     struct Node* child2 = createNode(2, 0);
+//     struct Node* child3 = createNode(4, 0);
+//     struct Node* grandchild1 = createNode(5, 0);
+//     struct Node* grandchild2 = createNode(6, 0);
+
+//     root->children[0] = child1;
+//     root->children[1] = child2;
+//     root->children[2] = child3;
+//     child1->children[0] = grandchild1;
+//     child1->children[1] = grandchild2;
+
+//     int returnSize;
+//     int* result = preorder(root, &returnSize);
+
+//     // 打印结果
+//     printf("Preorder traversal: ");
+//     for (int i = 0; i < returnSize; i++) {
+//         printf("%d ", result[i]);
+//     }
+//     printf("\n");
+
+//     // 释放内存
+//     free(result);
+//     free(grandchild2);
+//     free(grandchild1);
+//     free(child3);
+//     free(child2);
+//     free(child1);
+//     free(root->children);
+//     free(root);
+
+//     return 0;
+// }
+
+//-----------------------------------------------------
+//225
+// int main() {
+//     // 创建一个栈实例
+//     MyStack* myStack = myStackCreate();
+
+//     // 执行操作
+//     myStackPush(myStack, 1);
+//     myStackPush(myStack, 2);
+
+//     int topElement = myStackTop(myStack); // 获取栈顶元素
+//     printf("Top element: %d\n", topElement); // 应输出 2
+
+//     int poppedElement = myStackPop(myStack); // 弹出栈顶元素
+//     printf("Popped element: %d\n", poppedElement); // 应输出 2
+
+//     bool isEmpty = myStackEmpty(myStack); // 检查栈是否为空
+//     printf("Is stack empty? %s\n", isEmpty ? "true" : "false"); // 应输出 false
+
+//     // 释放栈
+//     myStackFree(myStack);
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//232
+// int main() {
+//     // 创建一个队列实例
+//     MyQueue* myQueue = myQueueCreate();
+
+//     // 执行操作
+//     myQueuePush(myQueue, 1);
+//     myQueuePush(myQueue, 2);
+
+//     int frontElement = myQueuePeek(myQueue); // 获取队列开头元素
+//     printf("Front element: %d\n", frontElement); // 应输出 1
+
+//     int poppedElement = myQueuePop(myQueue); // 弹出队列开头元素
+//     printf("Popped element: %d\n", poppedElement); // 应输出 1
+
+//     bool isEmpty = myQueueEmpty(myQueue); // 检查队列是否为空
+//     printf("Is queue empty? %s\n", isEmpty ? "true" : "false"); // 应输出 false
+
+//     // 释放队列
+//     myQueueFree(myQueue);
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//2129
+// int main() {
+//     char title1[] = "capiTalIze tHe titLe";
+//     char title2[] = "First leTTeR of EACH Word";
+//     char title3[] = "i lOve leetcode";
+
+//     printf("Original: %s\n", title1);
+//     printf("Capitalized: %s\n", capitalizeTitle(title1));
+
+//     printf("Original: %s\n", title2);
+//     printf("Capitalized: %s\n", capitalizeTitle(title2));
+
+//     printf("Original: %s\n", title3);
+//     printf("Capitalized: %s\n", capitalizeTitle(title3));
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//303
+// int main() {
+//     int nums[] = {-2, 0, 3, -5, 2, -1};
+//     int numsSize = sizeof(nums) / sizeof(nums[0]);
+
+//     NumArray* numArray = numArrayCreate(nums, numsSize);
+
+//     printf("sumRange(0, 2) = %d\n", numArraySumRange(numArray, 0, 2)); // 应输出 1
+//     printf("sumRange(2, 5) = %d\n", numArraySumRange(numArray, 2, 5)); // 应输出 -1
+//     printf("sumRange(0, 5) = %d\n", numArraySumRange(numArray, 0, 5)); // 应输出 -3
+
+//     numArrayFree(numArray);
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//2908
 int main() {
-    // 示例1的输入
-    int values[] = {0, 32, 10, 43};
-    int valuesSize = sizeof(values) / sizeof(values[0]);
+    int nums1[] = {8, 6, 1, 5, 3};
+    int numsSize1 = sizeof(nums1) / sizeof(nums1[0]);
+    printf("Minimum sum for nums1: %d\n", minimumSum(nums1, numsSize1)); // 应输出 9
 
-    int edgesSize = 3;
-    int edgesColSize[] = {3, 3, 3};
-    int** edges = (int**)malloc(edgesSize * sizeof(int*));
-    for (int i = 0; i < edgesSize; i++) {
-        edges[i] = (int*)malloc(edgesColSize[i] * sizeof(int));
-    }
-    edges[0][0] = 0; edges[0][1] = 1; edges[0][2] = 10;
-    edges[1][0] = 1; edges[1][1] = 2; edges[1][2] = 15;
-    edges[2][0] = 0; edges[2][1] = 3; edges[2][2] = 10;
+    int nums2[] = {5, 4, 8, 7, 10, 2};
+    int numsSize2 = sizeof(nums2) / sizeof(nums2[0]);
+    printf("Minimum sum for nums2: %d\n", minimumSum(nums2, numsSize2)); // 应输出 13
 
-    int maxTime = 49;
-
-    // 调用函数并输出结果
-    int result = maximalPathQuality(values, valuesSize, edges, edgesSize, edgesColSize, maxTime);
-    printf("最大路径价值: %d\n", result);
-
-    // 释放内存
-    for (int i = 0; i < edgesSize; i++) {
-        free(edges[i]);
-    }
-    free(edges);
+    int nums3[] = {6, 5, 4, 3, 4, 5};
+    int numsSize3 = sizeof(nums3) / sizeof(nums3[0]);
+    printf("Minimum sum for nums3: %d\n", minimumSum(nums3, numsSize3)); // 应输出 -1
 
     return 0;
 }
+//-----------------------------------------------------
+
+
+
+
 
 
 
