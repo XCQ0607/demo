@@ -532,18 +532,68 @@
 // }
 //-----------------------------------------------------
 //2908
+// int main() {
+//     int nums1[] = {8, 6, 1, 5, 3};
+//     int numsSize1 = sizeof(nums1) / sizeof(nums1[0]);
+//     printf("Minimum sum for nums1: %d\n", minimumSum(nums1, numsSize1)); // 应输出 9
+
+//     int nums2[] = {5, 4, 8, 7, 10, 2};
+//     int numsSize2 = sizeof(nums2) / sizeof(nums2[0]);
+//     printf("Minimum sum for nums2: %d\n", minimumSum(nums2, numsSize2)); // 应输出 13
+
+//     int nums3[] = {6, 5, 4, 3, 4, 5};
+//     int numsSize3 = sizeof(nums3) / sizeof(nums3[0]);
+//     printf("Minimum sum for nums3: %d\n", minimumSum(nums3, numsSize3)); // 应输出 -1
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//3086
+// int main() {
+//     int nums1[] = {1, 1, 0, 0, 0, 1, 1, 0, 0, 1};
+//     int nums2[] = {0, 0, 0, 0};
+
+//     int numsSize1 = sizeof(nums1) / sizeof(nums1[0]);
+//     int numsSize2 = sizeof(nums2) / sizeof(nums2[0]);
+
+//     int k1 = 3;
+//     int maxChanges1 = 1;
+//     int k2 = 2;
+//     int maxChanges2 = 3;
+
+//     printf("Example 1: %lld\n", minimumMoves(nums1, numsSize1, k1, maxChanges1));
+//     printf("Example 2: %lld\n", minimumMoves(nums2, numsSize2, k2, maxChanges2));
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//70
+// int main() {
+//     int n = 3; // Example input, you can change this value to test different inputs
+//     int result = climbStairs(n);
+//     printf("Number of ways to climb %d stairs: %d\n", n, result);
+//     return 0;
+// }
+//-----------------------------------------------------
+//509   1137
+// int main() {
+//     int n = 6;  // 可以根据需要更改为任何正整数
+//     int result = fibonacci(n);
+//     int result1 = tribonacci(n);
+//     printf("F2(%d) = %d\n", n, result);
+//     printf("F3(%d) = %d\n", n, result1);
+//     return 0;
+// }
+//-----------------------------------------------------
+//746
 int main() {
-    int nums1[] = {8, 6, 1, 5, 3};
-    int numsSize1 = sizeof(nums1) / sizeof(nums1[0]);
-    printf("Minimum sum for nums1: %d\n", minimumSum(nums1, numsSize1)); // 应输出 9
+    int cost1[] = {10, 15, 20};
+    int size1 = sizeof(cost1) / sizeof(cost1[0]);
+    printf("Minimum cost for cost1: %d\n", minCostClimbingStairs(cost1, size1));
 
-    int nums2[] = {5, 4, 8, 7, 10, 2};
-    int numsSize2 = sizeof(nums2) / sizeof(nums2[0]);
-    printf("Minimum sum for nums2: %d\n", minimumSum(nums2, numsSize2)); // 应输出 13
-
-    int nums3[] = {6, 5, 4, 3, 4, 5};
-    int numsSize3 = sizeof(nums3) / sizeof(nums3[0]);
-    printf("Minimum sum for nums3: %d\n", minimumSum(nums3, numsSize3)); // 应输出 -1
+    int cost2[] = {1, 100, 1, 1, 1, 100, 1, 1, 100, 1};
+    int size2 = sizeof(cost2) / sizeof(cost2[0]);
+    printf("Minimum cost for cost2: %d\n", minCostClimbingStairs(cost2, size2));
 
     return 0;
 }

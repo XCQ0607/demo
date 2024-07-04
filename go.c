@@ -802,6 +802,7 @@ void myQueueFree(MyQueue* obj) {         // 释放队列
 }
 //----------------------------------------------------
 //2129
+#include <ctype.h>
 char * capitalizeTitle(char * title){
     int len = strlen(title);
     int j = 0;
@@ -809,6 +810,7 @@ char * capitalizeTitle(char * title){
         if (title[i] == ' ' || title[i] == '\0') {
             if (i - j > 2) {
                 title[j] = toupper(title[j]); /* 转为大写 */
+                //在使用 toupper 和 tolower 函数之前，需要包含标准库头文件 <ctype.h>
             }
             j = i + 1; /* 更新起始位置 */
             // 跳过空格或换行符 title[i] == ' ' || title[i] == '\0'
@@ -889,4 +891,132 @@ int minimumSum(int* nums, int numsSize) {
     return found ? minSum : -1;
 }
 //----------------------------------------------------
+//3086
+int f(int i, int *nums, int numsSize) {
+    int x = nums[i];
+    if (i - 1 >= 0) {
+        x += nums[i - 1];
+    }
+    if (i + 1 < numsSize) {
+        x += nums[i + 1];
+    }
+    return x;
+}
 
+long long minimumMoves(int* nums, int numsSize, int k, int maxChanges) {
+    int n = numsSize;
+
+    long long *indexSum = (long long *)malloc(sizeof(long long) * (n + 1)), *sum = (long long *)malloc(sizeof(long long) * (n + 1));
+    for (int i = 0; i < n; i++) {
+        indexSum[i + 1] = indexSum[i] + nums[i] * i;
+        sum[i + 1] = sum[i] + nums[i];
+    }
+    long long res = LLONG_MAX;
+    for (int i = 0; i < n; i++) {
+        if (f(i, nums, n) + maxChanges >= k) {
+            if (k <= f(i, nums, n)) {
+                res = fmin(res, (long long)k - nums[i]);
+            } else {
+                res = fmin(res, (long long)2 * k - f(i, nums, n) - nums[i]);
+            }
+            continue;
+        }
+        int left = 0, right = n;
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            int i1 = fmax(i - mid, 0), i2 = fmin(i + mid, n - 1);
+            if (sum[i2 + 1] - sum[i1] >= k - maxChanges) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        int i1 = fmax(i - left, 0), i2 = fmin(i + left, n - 1);
+        if (sum[i2 + 1] - sum[i1] > k - maxChanges) {
+            i1++;
+        }
+        long long count1 = sum[i + 1] - sum[i1], count2 = sum[i2 + 1] - sum[i + 1];
+        res = fmin(res, indexSum[i2 + 1] - indexSum[i + 1] - i * count2 + i * count1 - (indexSum[i + 1] - indexSum[i1]) + 2 * maxChanges);
+    }
+    free(indexSum);
+    free(sum);
+    return res;
+}
+//----------------------------------------------------
+//70
+int climbStairs(int n){
+    if(n == 0) 
+        return 0;
+    int i = 0;
+    int p = 0;
+    int q = 0;  //p,q分别表示n-1,n-2阶台阶的不同走法
+    int res = 1;
+    while(i < n){
+        p = q;      //n-2阶台阶的走法
+        q = res;        //n-1阶台阶的走法
+        res = p+q;      //n阶台阶的走法
+
+    //     n-1  n-2     n
+        //&q = 1,p = 0,*res = 1
+        //*q = 1,&p = 1,res = 2
+        //q = 2,p = 1,res = 3
+        //q = 1,p = 1,res = 2
+        //q = 2,p = 1,res = 3
+        //q = 3,p = 2,res = 5
+        //q = 5,p = 3,res = 8
+        //q = 8,p = 5,res = 13
+        //q = 13,p = 8,res = 21
+        //q = 21,p = 13,res = 34
+        i++;
+    }
+    return res;
+}
+//----------------------------------------------------
+//509
+//斐波那契数列
+int fibonacci(int n) {
+    if (n < 2) {
+        return n;
+    }
+    int p = 0, q = 0, r = 1;
+    //p是n-2项，q是n-1项，r是n项
+    for (int i = 2; i <= n; ++i) {
+        p = q;
+        q = r;  //前两位已就位，1,1
+        r = p + q;
+    }
+    return r;
+}
+//----------------------------------------------------
+//1137
+int tribonacci(int n) {
+    if (n == 0) return 0;
+    if (n == 1) return 1;
+    if (n == 2) return 1;
+    
+    int a = 0, b = 1, c = 1, d;
+    for (int i = 3; i <= n; ++i) {
+        d = a + b + c;
+        a = b;
+        b = c;
+        c = d;
+    }
+    return c;
+}
+//----------------------------------------------------
+//746
+int minCostClimbingStairs(int* cost, int costSize) {
+    if (costSize == 0) return 0;
+    if (costSize == 1) return cost[0];
+
+    int dp[costSize + 1];
+    dp[0] = 0;
+    dp[1] = 0;
+
+    for (int i = 2; i <= costSize; ++i) {
+        dp[i] = (dp[i-1] + cost[i-1] < dp[i-2] + cost[i-2]) ? dp[i-1] + cost[i-1] : dp[i-2] + cost[i-2];
+    }
+
+    return dp[costSize];
+}
+//----------------------------------------------------
