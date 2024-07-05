@@ -1020,3 +1020,89 @@ int minCostClimbingStairs(int* cost, int costSize) {
     return dp[costSize];
 }
 //----------------------------------------------------
+//3033
+int** modifiedMatrix(int** matrix, int matrixSize, int* matrixColSize, int* returnSize, int** returnColumnSizes) {
+    int m = matrixSize; //行数
+    int n = *matrixColSize; //传入的是每一行的地址，需要解引用,之后表示列数
+    *returnSize = m;
+    *returnColumnSizes = (int*)malloc(m * sizeof(int));
+    for (int i = 0; i < m; ++i) {
+        (*returnColumnSizes)[i] = n;
+        //将每一行的列数赋值给returnColumnSizes
+    }
+
+    int** answer = (int**)malloc(m * sizeof(int*));
+    for (int i = 0; i < m; ++i) {
+        answer[i] = (int*)malloc(n * sizeof(int));
+        memcpy(answer[i], matrix[i], n * sizeof(int));
+    }
+
+    for (int j = 0; j < n; ++j) {
+        int maxVal = INT_MIN;       //这个INT_MIN是一个宏定义，表示整型变量可以表示的最小值。在大多数系统中，INT_MIN 的值为 -2147483648，即 32 位有符号整数的最小值。
+        for (int i = 0; i < m; ++i) {
+            if (matrix[i][j] != -1 && matrix[i][j] > maxVal) {
+                maxVal = matrix[i][j];
+            }
+        }
+        for (int i = 0; i < m; ++i) {
+            if (matrix[i][j] == -1) {
+                answer[i][j] = maxVal;
+            }
+        }
+    }
+
+    return answer;
+}
+//----------------------------------------------------
+//70
+int climbStairs1(int n) {
+    if (n <= 2) return n;
+    
+    int a = 1, b = 2, c;
+    for (int i = 3; i <= n; ++i) {
+        c = a + b;
+        a = b;
+        b = c;
+    }
+    return c;
+}
+//----------------------------------------------------
+//198
+int rob(int* nums, int numsSize) {
+    if (numsSize == 0) return 0;
+    if (numsSize == 1) return nums[0];
+
+    int prev1 = 0;  // 偷前一家
+    int prev2 = 0;  // 不偷前一家
+
+    for (int i = 0; i < numsSize; ++i) {
+        int temp = prev1;
+        //这里prev2 + nums[i]，是不偷前一家的最大值加上，偷当前一家
+        //prev1，是偷前一家的最大值
+        prev1 = (prev2 + nums[i] > prev1) ? prev2 + nums[i] : prev1;
+        prev2 = temp;
+    }
+
+    return prev1;
+}
+//----------------------------------------------------
+//740
+int deleteAndEarn(int* nums, int numsSize) {
+    int hash[10001]={0};    // 假设 nums 中的元素值不会超过 10000
+    int n=1;
+    for(int i=0;i<numsSize;i++){
+        hash[nums[i]]+=nums[i];
+        if(nums[i]>n)
+        {
+            n=nums[i];
+        }
+    }
+    int dp[n+2];
+    dp[1]=hash[1];
+    dp[2]=fmax(hash[2],hash[1]);
+    for(int i=3;i<n+1;i++){
+        dp[i]=fmax(dp[i-1],dp[i-2]+hash[i]);
+    }
+    return dp[n];
+}
+//----------------------------------------------------

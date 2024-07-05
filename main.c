@@ -586,15 +586,78 @@
 // }
 //-----------------------------------------------------
 //746
+// int main() {
+//     int cost1[] = {10, 15, 20};
+//     int size1 = sizeof(cost1) / sizeof(cost1[0]);
+//     printf("Minimum cost for cost1: %d\n", minCostClimbingStairs(cost1, size1));
+
+//     int cost2[] = {1, 100, 1, 1, 1, 100, 1, 1, 100, 1};
+//     int size2 = sizeof(cost2) / sizeof(cost2[0]);
+//     printf("Minimum cost for cost2: %d\n", minCostClimbingStairs(cost2, size2));
+
+//     return 0;
+// }
+//-----------------------------------------------------
+//3033
+// int main() {
+//     int matrix[3][3] = {
+//         {1, 2, -1},
+//         {4, -1, 6},
+//         {7, 8, 9}
+//     };
+//     //最简便的的二维数组赋值方法
+//     int* matrixPtr[3];
+//     for (int i = 0; i < 3; ++i) {
+//         matrixPtr[i] = matrix[i];   //将二维数组的每一行的首地址赋值给一维数组
+//     }
+//     int matrixColSize = 3;      // 列数
+//     int returnSize;
+//     int* returnColumnSizes;
+
+//     int** result = modifiedMatrix(matrixPtr, 3, &matrixColSize, &returnSize, &returnColumnSizes);
+
+//     printf("Modified Matrix:\n");
+//     for (int i = 0; i < returnSize; ++i) {
+//         for (int j = 0; j < returnColumnSizes[i]; ++j) {
+//             printf("%d ", result[i][j]);
+//         }
+//         printf("\n");
+//     }
+
+//     // Free allocated memory
+//     for (int i = 0; i < returnSize; ++i) {
+//         free(result[i]);
+//     }
+//     free(result);
+//     free(returnColumnSizes);
+
+//     return 0;
+// }
+
+//-----------------------------------------------------
+//70
+// int main() {
+//     int n = 3;  // 示例 2 的输入
+//     int result = climbStairs1(n);
+//     printf("Number of ways to climb %d stairs: %d\n", n, result);
+//     return 0;
+// }
+//-----------------------------------------------------
+//198
+// int main() {
+//     int houses[] = {2, 999, 9, 3, 999};  // 示例 2 的输入
+//     int n = sizeof(houses) / sizeof(houses[0]);
+//     int result = rob(houses, n);
+//     printf("Maximum amount that can be robbed: %d\n", result);
+//     return 0;
+// }
+//-----------------------------------------------------
+//740
 int main() {
-    int cost1[] = {10, 15, 20};
-    int size1 = sizeof(cost1) / sizeof(cost1[0]);
-    printf("Minimum cost for cost1: %d\n", minCostClimbingStairs(cost1, size1));
-
-    int cost2[] = {1, 100, 1, 1, 1, 100, 1, 1, 100, 1};
-    int size2 = sizeof(cost2) / sizeof(cost2[0]);
-    printf("Minimum cost for cost2: %d\n", minCostClimbingStairs(cost2, size2));
-
+    int nums[] = {2, 2, 3, 3, 3, 4};  // 示例 2 的输入
+    int n = sizeof(nums) / sizeof(nums[0]);
+    int result = deleteAndEarn(nums, n);
+    printf("Maximum points that can be earned: %d\n", result);
     return 0;
 }
 //-----------------------------------------------------
